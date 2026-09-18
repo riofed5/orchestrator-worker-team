@@ -890,8 +890,9 @@ function insightsRow(it){
   const sizeText=it.size?SIZE_TEXT[it.size]:'';
   const fc=it.forecast||{};
   const pill=fc.cost?`<span class="cost ${esc(fc.cost)}">${esc(COST_TEXT[fc.cost]||fc.cost)}</span>`:'';
+  const baseId=(insightsData.data&&insightsData.data.baseline)||null;
   const leadText=(it.lead&&typeof it.lead.readsPerRun==='number')
-    ?`the lead read ${words(it.lead.readsPerRun)} words per run${typeof it.lead.change==='number'?` (${pctVsBase(it.lead.change,'F-10')})`:''}`:'';
+    ?`the lead read ${words(it.lead.readsPerRun)} words per run${baseId&&typeof it.lead.change==='number'?` (${pctVsBase(it.lead.change,baseId)})`:''}`:'';
   const dominant=usageData[it.id]&&usageData[it.id].data&&usageData[it.id].data.dominantStep;
   const dominantText=dominant?`most of it went on ${STAGE_LABEL[dominant.step]||dominant.step} (${Math.round(dominant.share*100)}%)`:'';
   return `<li class="step" data-open="${esc(it.id)}" style="cursor:pointer"><span class="mark">✓</span>
@@ -995,7 +996,7 @@ function usageSection(f){
       }).join('');
       let perRunLine='';
       if(data.lead.baseline) perRunLine=`<p>Per run the lead read ${words(data.lead.readsPerRun)} words, ${pctVsBase(data.lead.baseline.readsPerRun.change,data.lead.baseline.feature)}.</p>`;
-      else if(data.feature==='F-10') perRunLine=`<p>This is the baseline request the others are compared with.</p>`;
+      else if(data.baselineFeature&&data.feature===data.baselineFeature) perRunLine=`<p>This is the baseline request the others are compared with.</p>`;
       leadBlock=`<div style="margin-top:16px"><h3>What the lead engineer read</h3>${rows}${perRunLine}</div>`;
     }
     body=`${verdict}${allowanceSection}${dominantHint}${table}${leadBlock}${stages}${unrecordedHint}${lessons}${neighboursBlock}${techTable}`;

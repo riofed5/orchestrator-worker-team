@@ -126,7 +126,7 @@ exact card the agents receive. Off by default.
   every two seconds.
 - The lead reading too much? The dials are in "Context budget" in
   `AGENTS.md`; the run budget and the effort per step are at the top of
-  `board/serve.js`. `node board/usage.js compare F-10 F-12` shows any
+  `board/serve.js`. `node board/usage.js compare F-3 F-7` shows any
   request against the baseline.
 
 ## Kickoff message (paste once at the start of a session)

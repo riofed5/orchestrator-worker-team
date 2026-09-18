@@ -4,7 +4,7 @@
  *
  *   node board/usage.js F-6            what one request used, per model and per stage
  *   node board/usage.js lessons        what every finished request has taught us
- *   node board/usage.js compare F-10 F-12   what the lead read per run, against a baseline
+ *   node board/usage.js compare F-3 F-7     what the lead read per run, against a baseline
  *   node board/usage.js F-6 --json     the same as the board's API returns
  *
  * Reads the run records the board's server writes into board/data/runs/:
@@ -39,8 +39,20 @@ const MODEL_NAME = {
 const SENIOR_SHARE_HIGH = 0.75;
 /** A tool result of this many characters or more (about 4,000 tokens) was pulled into the lead's context whole. */
 const BIG_RESULT_CHARS = 16000;
-/** The request every later one is measured against. */
-const BASELINE_FEATURE = 'F-10';
+/**
+ * The request every later one is measured against: the first finished request
+ * that has recorded lead usage. Earlier requests, from before the board
+ * recorded usage, are skipped because there would be nothing to compare with.
+ * Null on a board with no such request yet, which turns the comparison off.
+ */
+function baselineFeature(dataDir) {
+  const runsDir = path.join(dataDir, 'runs');
+  for (const f of listFeatures(dataDir)) {
+    if (f.status !== 'done') continue;
+    if (listFeatureRuns(f.id, runsDir).some(meta => leadUsage(meta.id, { runsDir }).recorded)) return f.id;
+  }
+  return null;
+}
 /**
  * Dollars per million tokens: list prices, September 2026, at the 1-hour
  * cache-write rate the lead's runs use. Used only to split the lead's cost
@@ -341,8 +353,8 @@ const emptyLeadSummary = () => ({ turns: 0, reads: 0, cacheRead: 0, cacheWrite: 
   big: 0, runs: 0, costUsd: 0, readsPerRun: null, cachedShare: null, share: null, baseline: null });
 
 /** How this request's lead figures compare with the baseline request; null when either side has none. */
-function leadBaseline(lead, steps, dataDir) {
-  const base = featureUsage(BASELINE_FEATURE, { dataDir });
+function leadBaseline(lead, steps, dataDir, baseId) {
+  const base = featureUsage(baseId, { dataDir });
   if (!lead.runs || !base.lead.runs) return null;
   const byStage = {};
   for (const s of ['plan', 'build']) {
@@ -351,7 +363,7 @@ function leadBaseline(lead, steps, dataDir) {
     byStage[s] = { change: changeFrom(mine, theirs) };
   }
   return {
-    feature: BASELINE_FEATURE,
+    feature: baseId,
     readsPerRun: { change: changeFrom(lead.readsPerRun, base.lead.readsPerRun) },
     costUsd: { change: changeFrom(lead.costUsd, base.lead.costUsd) },
     byStage
@@ -432,7 +444,8 @@ function featureUsage(id, opts = {}) {
   } else {
     lead.costUsd = null;
   }
-  if (id !== BASELINE_FEATURE) lead.baseline = leadBaseline(lead, steps, dataDir);
+  const baseId = baselineFeature(dataDir);
+  if (baseId && id !== baseId) lead.baseline = leadBaseline(lead, steps, dataDir, baseId);
 
   const size = feature ? feature.size || null : null;
   const neighbourItems = feature ? sizeNeighbours(id, size, dataDir) : [];
@@ -469,6 +482,7 @@ function featureUsage(id, opts = {}) {
     runs, steps, models, lead, totalCostUsd: recorded ? totalCostUsd : null,
     tokens, allowance, dominantStep,
     seniorShare: recorded && totalCostUsd > 0 ? seniorCostUsd / totalCostUsd : null,
+    baselineFeature: baseId,
     unrecorded, missingSteps,
     forecast: { cost: forecastCost, verdict, plain },
     neighbours: { items: neighbourItems, change: changeFrom(recorded ? totalCostUsd : null, neighbourAvg) },
@@ -506,8 +520,8 @@ function featureLessons(u, feature) {
 
   if (u.lead.runs) {
     const perRun = `The lead read ${num(roundish(u.lead.readsPerRun))} words per run`;
-    if (u.feature === BASELINE_FEATURE) lines.push(`${perRun}; this is the baseline request.`);
-    else if (u.lead.baseline) lines.push(`${perRun}; ${comparedWith(u.lead.baseline.readsPerRun.change, BASELINE_FEATURE)}.`);
+    if (u.baselineFeature && u.feature === u.baselineFeature) lines.push(`${perRun}; this is the baseline request.`);
+    else if (u.lead.baseline) lines.push(`${perRun}; ${comparedWith(u.lead.baseline.readsPerRun.change, u.lead.baseline.feature)}.`);
     else lines.push(`${perRun}.`);
   }
 
@@ -657,13 +671,14 @@ function boardInsights(opts = {}) {
   });
 
   const lessons = lessonsForPlanning({ dataDir }).lines;
-  const changes = features.filter(f => f.id !== BASELINE_FEATURE && f.lead.change != null).map(f => f.lead.change);
-  if (changes.length) {
+  const baseId = baselineFeature(dataDir);
+  const changes = features.filter(f => f.id !== baseId && f.lead.change != null).map(f => f.lead.change);
+  if (baseId && changes.length) {
     const avg = changes.reduce((sum, c) => sum + c, 0) / changes.length;
-    lessons.push(`Since ${BASELINE_FEATURE}, the lead has read on average ${pct(Math.abs(avg))} ${avg <= 0 ? 'less' : 'more'} per run over ${changes.length} request${changes.length === 1 ? '' : 's'}.`);
+    lessons.push(`Since ${baseId}, the lead has read on average ${pct(Math.abs(avg))} ${avg <= 0 ? 'less' : 'more'} per run over ${changes.length} request${changes.length === 1 ? '' : 's'}.`);
   }
 
-  return { features, lessons };
+  return { features, lessons, baseline: baseId };
 }
 
 /* ---------- one request against another ---------- */
@@ -973,6 +988,6 @@ function main(argv) {
 
 module.exports = { runUsage, leadUsage, featureUsage, compareFeatures, lessonsForPlanning, boardInsights,
   claudeUsage, allowanceBasis, allowanceShare, ALLOWANCE_WINDOWS,
-  FORECAST_BANDS, BASELINE_FEATURE, BIG_RESULT_CHARS, verdictFor };
+  FORECAST_BANDS, baselineFeature, BIG_RESULT_CHARS, verdictFor };
 
 if (require.main === module) process.exitCode = main(process.argv.slice(2));
