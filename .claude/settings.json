@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "claude-opus-5",
+  "permissions": {
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(rm -rf $HOME:*)",
+      "Bash(rm -rf ..:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(cat credentials/services.env:*)",
+      "Read(credentials/services.env)",
+      "Read(**/.env)",
+      "Read(**/.env.local)"
+    ]
+  }
+}

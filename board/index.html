@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<style>
+:root{
+  --paper:#F6F7F4; --card:#FFFFFF; --sunk:#EDEFEA; --ink:#1C2321; --muted:#5B655F; --faint:#8B948E;
+  --line:#DDE1DA; --line2:#C2C8BF;
+  --accent:#14554E; --accent-ink:#FFFFFF; --accent-soft:#DEEAE7;
+  --amber:#8F5602; --amber-soft:#F7EBD6; --amber-line:#DFB871;
+  --green:#2E7D4F; --green-soft:#DFEEE4;
+  --red:#A93B2E; --red-soft:#F6E0DC;
+  --lead:#4A3B8F; --lead-soft:#E7E3F5;
+  --dev:#1D6B5F; --dev-soft:#DCECE8;
+  --asst:#8A6118; --asst-soft:#F5E9D3;
+  --shadow:0 1px 2px rgba(28,35,33,.05), 0 10px 30px rgba(28,35,33,.07);
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:7px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131715; --card:#1A1F1D; --sunk:#171C1A; --ink:#E7EBE6; --muted:#9BA59E; --faint:#6E7972;
+  --line:#2A312D; --line2:#3D453F;
+  --accent:#63BFB0; --accent-ink:#0E1413; --accent-soft:#123330;
+  --amber:#DDA654; --amber-soft:#33270F; --amber-line:#6B4F1C;
+  --green:#5CBE84; --green-soft:#12301F;
+  --red:#E8877A; --red-soft:#351A16;
+  --lead:#A294EE; --lead-soft:#241F42;
+  --dev:#5FBFAE; --dev-soft:#0F2E2A;
+  --asst:#D3A757; --asst-soft:#332715;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+}}
+:root[data-theme="dark"]{
+  --paper:#131715; --card:#1A1F1D; --sunk:#171C1A; --ink:#E7EBE6; --muted:#9BA59E; --faint:#6E7972;
+  --line:#2A312D; --line2:#3D453F;
+  --accent:#63BFB0; --accent-ink:#0E1413; --accent-soft:#123330;
+  --amber:#DDA654; --amber-soft:#33270F; --amber-line:#6B4F1C;
+  --green:#5CBE84; --green-soft:#12301F;
+  --red:#E8877A; --red-soft:#351A16;
+  --lead:#A294EE; --lead-soft:#241F42;
+  --dev:#5FBFAE; --dev-soft:#0F2E2A;
+  --asst:#D3A757; --asst-soft:#332715;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
+p{margin:0}
+ul{margin:0;padding-left:1.15em}
+.mono{font-family:var(--mono);font-size:12.5px}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.hint{font-size:12.5px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+.app{display:grid;grid-template-rows:auto 1fr;height:100vh;min-height:0}
+.top{display:flex;align-items:center;gap:14px;padding:11px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand h1{font-family:var(--serif);font-size:21px;letter-spacing:-.01em}
+.brand span{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.top .spacer{flex:1}
+.attn{display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:999px;background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber);font-size:12.5px;font-weight:500}
+.attn i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r);border:1px solid var(--line2);background:var(--card);font-weight:500;font-size:13.5px;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);border-color:var(--line)}
+.btn.warn{background:var(--amber);color:var(--paper);border-color:var(--amber)}
+.btn.danger{color:var(--red);border-color:transparent;background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.body{display:grid;grid-template-columns:44px 296px minmax(0,1fr);min-height:0}
+.body.no-rail{grid-template-columns:44px minmax(0,1fr)}
+.nav{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:6px;overflow:auto;min-height:0}
+.navlink{width:34px;height:34px;display:grid;place-items:center;border-radius:var(--r);color:var(--muted);text-decoration:none;font-size:16px}
+.navlink:hover{background:var(--sunk)}
+.navlink[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.rail{border-right:1px solid var(--line);background:var(--card);overflow:auto;min-height:0}
+.main{overflow:auto;min-height:0;padding:26px 34px 80px}
+.sheet{max-width:720px;margin:0 auto}
+.only-narrow{display:none}
+@media (max-width:860px){
+  .body{grid-template-columns:44px 1fr}
+  .body.no-rail{grid-template-columns:44px 1fr}
+  .rail{display:none}
+  .rail.open{display:block;position:fixed;inset:0 auto 0 0;width:min(320px,92vw);z-index:30;box-shadow:var(--shadow)}
+  .main{padding:18px 16px 60px}
+  .only-narrow{display:inline-flex}
+}
+
+.rail-top{padding:14px 16px 8px;display:flex;align-items:center;gap:8px}
+.rail-top .eyebrow{flex:1}
+.group{padding:10px 16px 2px}
+.group .eyebrow{display:block;padding-bottom:4px}
+.item{display:block;width:100%;text-align:left;padding:9px 16px;border:0;border-left:3px solid transparent;background:transparent}
+.item:hover{background:var(--sunk)}
+.item[aria-current="true"]{background:var(--accent-soft);border-left-color:var(--accent)}
+.item .t{font-weight:500;line-height:1.3;display:block}
+.item .m{display:flex;align-items:center;gap:7px;margin-top:4px;flex-wrap:wrap}
+.empty{padding:22px 16px;color:var(--muted);font-size:13px;line-height:1.55}
+
+.st{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:500;background:var(--sunk);color:var(--muted);border:1px solid transparent}
+.st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st.ready,.st.planning,.st.building,.st.checking{background:var(--accent-soft);color:var(--accent)}
+.st.new,.st.spec-review,.st.plan-review,.st.needs-input{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+.st.done{background:var(--green-soft);color:var(--green)}
+.st.blocked{background:var(--red-soft);color:var(--red)}
+.who{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px}
+.who.SENIOR{background:var(--lead-soft);color:var(--lead)}
+.who.MID{background:var(--dev-soft);color:var(--dev)}
+.who.JUNIOR{background:var(--asst-soft);color:var(--asst)}
+.who.model{background:var(--sunk);color:var(--muted)}
+.cost{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px}
+.cost.low{background:var(--green-soft);color:var(--green)}
+.cost.medium{background:var(--amber-soft);color:var(--amber)}
+.cost.high{background:var(--red-soft);color:var(--red)}
+.prio.P1{color:var(--red);font-weight:500;font-size:11.5px}
+
+.doc-head h2{font-family:var(--serif);font-size:30px;line-height:1.18;letter-spacing:-.015em;margin-bottom:8px}
+.doc-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12.5px}
+.doc-actions{display:flex;gap:6px;margin:16px 0 4px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+section.blk{padding:22px 0;border-bottom:1px solid var(--line)}
+section.blk:last-child{border-bottom:0}
+.blk > .eyebrow{display:block;margin-bottom:10px}
+.said{font-family:var(--serif);font-size:17.5px;line-height:1.55;white-space:pre-wrap;border-left:2px solid var(--line2);padding-left:16px}
+.goal{font-family:var(--serif);font-size:19px;line-height:1.45;margin-bottom:14px}
+.dl{display:grid;gap:14px}
+.dl h3{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:3px}
+.check{list-style:none;padding:0}
+.check li{position:relative;padding-left:22px;margin:4px 0}
+.check li::before{content:"";position:absolute;left:2px;top:.5em;width:9px;height:9px;border:1.5px solid var(--line2);border-radius:2px}
+.check.ok li::before{background:var(--green);border-color:var(--green)}
+.no{list-style:none;padding:0}
+.no li{position:relative;padding-left:22px;margin:4px 0;color:var(--muted)}
+.no li::before{content:"—";position:absolute;left:4px;color:var(--faint)}
+
+.panel{border:1px solid var(--amber-line);background:var(--amber-soft);border-radius:var(--r);padding:16px 18px;margin-bottom:22px}
+.panel.calm{border-color:var(--line);background:var(--sunk)}
+.panel h3{font-family:var(--serif);font-size:19px;margin-bottom:4px}
+.panel .lede{color:var(--muted);font-size:13px;margin-bottom:12px}
+.panel .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.qa{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-top:10px}
+.qa .q{font-family:var(--serif);font-size:16px;margin-bottom:8px}
+textarea,input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line2);border-radius:var(--r);background:var(--card);resize:vertical;line-height:1.5;font-family:inherit}
+textarea{min-height:60px}
+.field{display:grid;gap:5px;margin-bottom:12px}
+.field label{font-size:12.5px;font-weight:600;color:var(--muted)}
+.cmd{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;margin-top:10px}
+.cmd code{font-family:var(--mono);font-size:13px;flex:1;user-select:all}
+
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:2px}
+.step{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:start;padding:10px 12px;border-radius:var(--r);background:var(--card);border:1px solid var(--line)}
+.step .mark{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;font-size:11px;color:var(--muted);margin-top:1px}
+.step.done .mark{background:var(--green);border-color:var(--green);color:#fff}
+.step.running .mark{border-color:var(--accent);color:var(--accent);border-style:dashed}
+.step .t{font-weight:500;line-height:1.35}
+.step .sub{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.step .tech{margin-top:7px;font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.5}
+.step .rt{text-align:right;font-size:11.5px;color:var(--faint);white-space:nowrap;padding-top:2px}
+
+.summary{font-family:var(--serif);font-size:17.5px;line-height:1.55;white-space:pre-wrap}
+.tech-block{margin-top:16px;background:var(--sunk);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:13px}
+.tech-block .eyebrow{display:block;margin-bottom:6px}
+.tech-block ul{font-family:var(--mono);font-size:12px;padding-left:1.1em}
+.pass{color:var(--green)}.fail{color:var(--red)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:18px 0}
+.tile{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:12px 14px}
+.tile .v{font-family:var(--serif);font-size:27px;line-height:1.1;margin-top:3px}
+.tile .d{font-size:12px;color:var(--muted);margin-top:4px}
+.log{list-style:none;padding:0;margin:0}
+.log li{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.log .at{color:var(--faint);font-size:12px;padding-top:1px}
+details.tech{margin-top:10px}
+details.tech summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:500}
+details.tech summary:hover{color:var(--ink)}
+.copybox{font-family:var(--mono);font-size:12px;background:var(--sunk);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+
+.live{border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:22px}
+.live .lh{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.live .lh h3{font-family:var(--serif);font-size:19px;flex:1}
+.live .rows{max-height:340px;overflow:auto;margin-top:8px}
+.live .rows li{grid-template-columns:74px 1fr}
+.live .rows .say{font-style:italic}
+.live .rows .end{font-weight:500}
+.live .cmdline{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:block;margin-top:2px;word-break:break-word}
+.live details.tech{margin-top:5px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+
+.drawer{position:fixed;inset:0 0 0 auto;width:min(430px,100vw);background:var(--card);border-left:1px solid var(--line);box-shadow:var(--shadow);display:none;flex-direction:column;z-index:40}
+.drawer.open{display:flex}
+.drawer-head{padding:14px 16px 0}
+.drawer-head .row{display:flex;align-items:center;gap:8px}
+.drawer-head h3{font-family:var(--serif);font-size:19px;flex:1}
+.tabs{display:flex;gap:3px;margin-top:12px;border-bottom:1px solid var(--line)}
+.tab{padding:7px 10px;border:0;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;font-size:13px;display:flex;gap:6px;align-items:center}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab .n{font-size:10.5px;padding:0 5px;border-radius:999px;background:var(--amber-soft);color:var(--amber)}
+.thread{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.msg{display:grid;gap:4px;max-width:94%}
+.msg .from{font-size:11.5px;color:var(--muted);display:flex;gap:7px;align-items:center}
+.msg .bubble{padding:9px 12px;border-radius:var(--r);background:var(--sunk);white-space:pre-wrap;font-size:13.5px;line-height:1.5}
+.msg.me{justify-self:end}
+.msg.me .bubble{background:var(--accent-soft)}
+.msg .pend{font-size:11.5px;color:var(--amber)}
+.composer{border-top:1px solid var(--line);padding:12px 16px;display:grid;gap:8px}
+.composer .r{display:flex;gap:6px;align-items:center}
+.composer .r select{flex:1}
+.scrim{position:fixed;inset:0;background:rgba(20,26,24,.35);z-index:35;display:none}
+.scrim.open{display:block}
+
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:0;width:min(680px,94vw);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(20,26,24,.45)}
+.m-head{padding:18px 22px 12px}
+.m-head h2{font-family:var(--serif);font-size:23px}
+.m-head p{color:var(--muted);font-size:13px;margin-top:4px}
+.m-body{padding:0 22px 4px;max-height:62vh;overflow:auto}
+.m-foot{display:flex;gap:8px;padding:14px 22px 18px;align-items:center;flex-wrap:wrap}
+.m-foot .spacer{flex:1}
+.big{min-height:180px;font-family:var(--serif);font-size:16.5px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 15px;border-radius:var(--r);font-size:13.5px;box-shadow:var(--shadow);z-index:60;max-width:92vw;line-height:1.45}
+.toast code{font-family:var(--mono);background:rgba(255,255,255,.16);padding:1px 5px;border-radius:3px}
+.offline{background:var(--red-soft);color:var(--red);border:1px solid var(--red);border-radius:var(--r);padding:12px 14px;margin-bottom:18px;font-size:13.5px}
+.meter{height:8px;border-radius:999px;background:var(--sunk);overflow:hidden;margin-top:8px}
+.meter .fill{height:100%;border-radius:999px 0 0 999px}
+.meter .fill.green{background:var(--green)}
+.meter .fill.amber{background:var(--amber)}
+.meter .fill.red{background:var(--red)}
+.tablewrap{overflow:auto;margin-top:10px;max-width:100%}
+table.usage{border-collapse:collapse;width:100%;font-size:12.5px}
+table.usage th,table.usage td{padding:6px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+table.usage th:first-child,table.usage td:first-child{text-align:left}
+table.usage thead th{color:var(--muted);font-weight:600;font-size:11.5px;vertical-align:bottom}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="btn sm ghost only-narrow" id="railBtn" aria-label="Show requests">☰</button>
+    <div class="brand"><h1>Request Desk</h1><span>you ask, the team builds</span></div>
+    <div class="spacer"></div>
+    <span id="attn"></span>
+    <button class="btn sm ghost" id="themeBtn" aria-label="Switch theme">◐</button>
+    <button class="btn primary" id="newBtn">Ask for something</button>
+  </header>
+  <div class="body" id="body">
+    <nav class="nav" id="nav" aria-label="Pages"></nav>
+    <nav class="rail" id="rail"></nav>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+<dialog id="dlg"><div id="dlgInner"></div></dialog>
+
+<script>
+(() => {
+'use strict';
+
+const ROLE={SENIOR:'Lead engineer',MID:'Developer',JUNIOR:'Assistant'};
+const MODEL_NAME={'haiku-4.5':'Haiku 4.5','sonnet-5':'Sonnet 5','opus-5':'Opus 5','fable-5.1':'Fable 5.1',
+  'claude-haiku-4-5-20251001':'Haiku 4.5','claude-sonnet-5':'Sonnet 5','claude-opus-5':'Opus 5','claude-fable-5-1':'Fable 5.1'};
+const DEFAULT_MODEL={JUNIOR:'haiku-4.5',MID:'sonnet-5',SENIOR:'opus-5'};
+const WAS_DEFAULT={SENIOR:'fable-5.1'};
+const COST_TEXT={low:'small',medium:'medium',high:'large'};
+const AGENTS=['senior','mid-dev','junior-dev'];
+const AGENT_NAME={senior:'the lead engineer','mid-dev':'the developer','junior-dev':'the assistant',human:'you'};
+const STATUS={
+  new:{label:'Not read back yet',note:'The lead engineer has not looked at this yet.'},
+  'spec-review':{label:'Check we understood you',note:'Read it over and approve, or change it.'},
+  ready:{label:'Waiting to be planned',note:'Approved. The team plans it on the next run.'},
+  planning:{label:'Working out how',note:'The lead engineer is reading the code and making a plan.'},
+  'plan-review':{label:'Plan needs your OK',note:'No code is written until you approve.'},
+  building:{label:'Being built',note:'The team is doing the work.'},
+  checking:{label:'Being checked',note:'The lead engineer is reviewing and running the checks.'},
+  'needs-input':{label:'Needs your answer',note:'The team stopped and asked you something.'},
+  done:{label:'Done',note:'Finished, checked and reported.'},
+  blocked:{label:'Stuck',note:'The team could not continue.'}
+};
+const TASK_STATUS={todo:'waiting',running:'in progress',done:'done',rejected:'sent back',escalated:'asked for help'};
+const SIZE_TEXT={small:'a small change',medium:'a medium job',large:'a big job'};
+const PRIO={P1:'Urgent',P2:'Normal',P3:'When you can'};
+const YOURS=new Set(['spec-review','plan-review','needs-input','blocked']);
+const OPEN=new Set(['new','spec-review','ready','planning','plan-review','building','checking','needs-input','blocked']);
+const STEP_TEXT={read:'read it back',plan:'planned it',build:'built it',inbox:'delivered messages',resume:'picked up where it stopped'};
+const STAGE_LABEL={read:'reading it back',plan:'planning',build:'building'};
+const STEP_ACTIVE_TEXT={read:'Reading it back…',plan:'Planning it…',build:'Building it…',resume:'Picking up where it stopped…',inbox:'Delivering your messages…'};
+const TOOL_TEXT={Bash:'ran a command',Read:'read a file',Edit:'changed a file',Write:'changed a file',Grep:'searched the code',Glob:'searched the code',Skill:'followed the team process'};
+const SUB_ROLE={'mid-dev':'developer','junior-dev':'assistant'};
+const RUN_MODEL={haiku:'Haiku 4.5',sonnet:'Sonnet 5',opus:'Opus 5',fable:'Fable 5.1'};
+const END_REASON={error_max_turns:'it ran out of turns',error_during_execution:'something went wrong while working'};
+const MAX_LIVE_ROWS=400;
+
+let features=[],messages=[],online=true;
+let sel=null,page='requests',drawerOpen=false,agentTab='senior',taskPick='',kind='Q',draft='';
+let docTab='';
+let homeTab='overview';
+let pendingRender=false;
+let runs=[],activeRun=null,activeFeature=null,activeStep=null,runsSel=undefined;
+let starting=false,startingStep=null,startingFeature=null;
+let usageData={};
+let insightsData={data:null,loading:false,loadedAt:0,error:null};
+let allowanceData={data:null,loading:false,loadedAt:0,error:null};
+let liveRun=null,liveEvents=[],liveNext=0,liveMeta=null,liveStick=true,liveT=null;
+let mainKey='';
+let tech=store('tech')==='1';
+let claudeData={info:null,status:null,usage:null,roster:null,runs:null,loadedAt:0,loading:false};
+let claudeT=null,claudePinging=false;
+let composeRaw='',composePrio='P2',composeErr='';
+
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowIso=()=>new Date().toISOString();
+const lines=s=>String(s||'').split('\n').map(x=>x.trim()).filter(Boolean);
+const feat=()=>features.find(f=>f.id===sel)||null;
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+function fmt(iso){ if(!iso) return ''; const d=new Date(iso);
+  return d.toDateString()===new Date().toDateString()
+    ? d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+    : d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+const clock=d=>d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const base=p=>String(p||'').split('/').filter(Boolean).pop()||'';
+function secs(n){ const s=Math.max(0,Math.round(n)); return s<60?s+'s':Math.floor(s/60)+'m '+(s%60)+'s'; }
+function durText(a,b){ if(!a||!b) return ''; return secs((new Date(b)-new Date(a))/1000); }
+function runModel(m){ const s=String(m||'').toLowerCase(); for(const k in RUN_MODEL) if(s.includes(k)) return RUN_MODEL[k]; return 'the usual model'; }
+const words=n=>(Math.round((Number(n)||0)/1000)*1000).toLocaleString();
+const fmtTokens=n=>(Number(n)||0).toLocaleString();
+function allowanceCapacity(window){
+  const b=allowanceData.data;
+  const w=b&&!b.error&&b.windows&&b.windows[window];
+  return (w&&typeof w.capacityTokens==='number')?w.capacityTokens:null;
+}
+function shareOfWindow(tokens,window){
+  const cap=allowanceCapacity(window);
+  const n=Number(tokens);
+  if(!cap||!Number.isFinite(n)) return null;
+  return n/cap;
+}
+function allowanceHeadlineText(allowance){
+  const b=allowanceData.data;
+  const w=b&&!b.error&&b.windows&&b.windows.five_hour;
+  const frac=allowance&&allowance.five_hour;
+  if(frac==null||!w) return 'share of your allowance is not known yet';
+  return `≈${Math.round(frac*100)}% of your five-hour allowance (${untilText(w.resetsAt)})`;
+}
+function allowanceBlock(allowance){
+  const b=allowanceData.data;
+  if(!b||b.error) return `<p class="hint">Your allowance reading has not loaded yet.</p>`;
+  const wins=[['five_hour','Five-hour window'],['seven_day','Seven-day window']];
+  const body=wins.map(([k,label])=>{
+    const w=b.windows&&b.windows[k];
+    const frac=allowance&&allowance[k];
+    if(!w||frac==null) return `<div><h3>${esc(label)}</h3><p class="hint">Not known yet.</p></div>`;
+    const pct=Math.round(frac*100);
+    return `<div><h3>${esc(label)}</h3><div class="meter"><div class="fill ${meterColor(pct,false)}" style="width:${Math.min(100,Math.max(0,pct))}%"></div></div>
+      <p class="hint" style="margin-top:6px">${pct}% of your allowance · ${esc(untilText(w.resetsAt))}</p></div>`;
+  }).join('');
+  return `<div class="dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">${body}</div>
+    <p class="hint" style="margin-top:8px">${esc(b.note||'This is an estimate worked out from a usage reading, and it counts only work done on this computer.')}</p>`;
+}
+function pctVsBase(change,other){ const pct=Math.round(Math.abs(change)*100); return `${pct}% ${change<0?'less':'more'} than ${other}`; }
+let toastT; function toast(html){ let t=$('.toast'); if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t);} t.innerHTML=html; clearTimeout(toastT); toastT=setTimeout(()=>t.remove(),5200); }
+async function copy(text){ try{ await navigator.clipboard.writeText(text); toast('Copied'); }catch(e){ toast('Could not copy. Select the text and copy it yourself.'); } }
+const openQ=fid=>messages.filter(m=>m.to==='human'&&m.kind==='Q'&&m.status!=='answered'&&(!fid||m.feature===fid)).sort(byTime);
+const byTime=(a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''));
+const threadFor=(fid,a)=>messages.filter(m=>m.feature===fid&&(m.to===a||m.from===a)).sort(byTime);
+const queuedTo=(fid,a)=>messages.filter(m=>m.feature===fid&&m.to===a&&m.status==='queued').length;
+const needsYou=f=>YOURS.has(f.status)||openQ(f.id).length>0||(f.interrupted&&!f.interrupted.resumedAt&&['building','checking'].includes(f.status));
+const nextId=()=>{ const n=features.reduce((m,f)=>Math.max(m,Number(f.n)||0),0)+1; return {id:'F-'+n,n}; };
+
+const pathFor=id=>'/requests/'+id;
+function go(path){ if(location.pathname!==path) history.pushState(null,'',path); route(); render(); }
+
+function route(){
+  const p=location.pathname;
+  const prevPage=page;
+  const m=/^\/requests\/(F-\d+)$/.exec(p);
+  if(p==='/usage'){ page='claude'; sel=null; }
+  else if(m){ page='requests'; sel=m[1]; }
+  else if(p==='/'){ page='requests'; sel=null; }
+  else { page='requests'; sel=null; history.replaceState(null,'','/'); }
+  if(sel!==runsSel){ runsSel=sel; docTab=''; loadRuns(); }
+  if(page==='claude'){ if(prevPage!=='claude') loadClaude(); startClaudePoll(); }
+  else stopClaudePoll();
+}
+
+function cardText(f){
+  const o=[`${f.id} ${f.title}`,`GOAL: ${f.goal}`];
+  if(f.why) o.push(`WHY: ${f.why}`);
+  if(f.must?.length){ o.push('MUST:'); f.must.forEach(x=>o.push('- '+x)); }
+  if(f.mustNot?.length){ o.push('MUST NOT:'); f.mustNot.forEach(x=>o.push('- '+x)); }
+  if(f.assumptions?.length){ o.push('ASSUMED:'); f.assumptions.forEach(x=>o.push('- '+x)); }
+  const ans=(f.questions||[]).filter(q=>q.a);
+  if(ans.length){ o.push('ANSWERS:'); ans.forEach(q=>o.push(`- ${q.q} → ${q.a}`)); }
+  if(f.context?.length){ o.push('CONTEXT:'); f.context.forEach(c=>o.push('- '+c.text)); }
+  if(f.hint) o.push(`HINT: ${f.hint}`);
+  o.push(`PRIO: ${f.prio||'P2'}`);
+  return o.join('\n');
+}
+
+/* ---------- api ---------- */
+const api={
+  async state(){ const r=await fetch('/api/state',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async putFeature(id,doc){ const r=await fetch('/api/features/'+encodeURIComponent(id),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(doc)}); if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error||'save failed'); },
+  async delFeature(id){ const r=await fetch('/api/features/'+encodeURIComponent(id),{method:'DELETE'}); if(!r.ok) throw new Error('delete failed'); },
+  async addMessage(doc){ const r=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(doc)}); if(!r.ok) throw new Error('send failed'); return r.json(); },
+  async patchMessage(id,doc){ const r=await fetch('/api/messages/'+encodeURIComponent(id),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(doc)}); if(!r.ok) throw new Error('update failed'); },
+  async startRun(feature,step){ const r=await fetch('/api/runs',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({feature,step})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){ const e=new Error(d.error||('server said '+r.status)); e.code=r.status; throw e; }
+    return d; },
+  async runs(){ const r=await fetch('/api/runs',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async run(id,since){ const r=await fetch('/api/runs/'+encodeURIComponent(id)+'?since='+(Number(since)||0),{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async stopRun(id){ const r=await fetch('/api/runs/'+encodeURIComponent(id)+'/stop',{method:'POST'}); if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error||'could not stop the run'); },
+  async featureUsage(id){ const r=await fetch('/api/features/'+encodeURIComponent(id)+'/usage',{cache:'no-store'}); if(!r.ok){ const e=new Error('server said '+r.status); e.code=r.status; throw e; } return r.json(); },
+  async insights(){ const r=await fetch('/api/insights',{cache:'no-store'}); if(!r.ok){ const e=new Error('server said '+r.status); e.code=r.status; throw e; } return r.json(); },
+  async claudeInfo(){ const r=await fetch('/api/claude/info',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async claudeStatus(){ const r=await fetch('/api/claude/status',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async claudeUsage(){ const r=await fetch('/api/claude/usage',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async claudeRoster(){ const r=await fetch('/api/claude/roster',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async claudeAllowance(){ const r=await fetch('/api/claude/allowance',{cache:'no-store'}); if(!r.ok) throw new Error('server said '+r.status); return r.json(); },
+  async claudePing(){ const r=await fetch('/api/claude/ping',{method:'POST'}); const d=await r.json().catch(()=>({})); if(!r.ok){ const e=new Error(d.error||('server said '+r.status)); e.code=r.status; throw e; } return d; }
+};
+
+/* ---------- runs: start the team and watch it ---------- */
+function translateEvent(ev){
+  const out=[];
+  if(!ev||typeof ev!=='object') return out;
+  const at=clock(new Date());
+  let raw=''; try{ raw=JSON.stringify(ev,null,1); }catch(e){ raw=''; }
+  if(ev.type==='system'&&ev.subtype==='init'){
+    out.push({at,kind:'info',text:'The team started',mono:ev.model?String(ev.model):'',raw});
+  }else if(ev.type==='assistant'&&ev.message&&Array.isArray(ev.message.content)){
+    for(const c of ev.message.content){
+      if(!c||typeof c!=='object') continue;
+      if(c.type==='text'){
+        const t=String(c.text||'').trim(); if(!t) continue;
+        out.push({at,kind:'say',text:'The lead says: '+t.slice(0,300)+(t.length>300?'…':''),full:t.length>300?t:'',mono:'',raw});
+      }else if(c.type==='tool_use') out.push(toolRow(c,at,raw));
+    }
+  }else if(ev.type==='result') out.push(resultRow(ev,at,raw));
+  return out;
+}
+function toolRow(c,at,raw){
+  const name=String(c.name||''),inp=(c.input&&typeof c.input==='object')?c.input:{};
+  let text='',mono='';
+  if(name==='Agent'||name==='Task'){
+    text='handed work to the '+(SUB_ROLE[inp.subagent_type]||'a helper')+' ('+runModel(inp.model)+')';
+  }else if(TOOL_TEXT[name]){
+    text=TOOL_TEXT[name];
+    if(name==='Read'||name==='Edit'||name==='Write'){ const b=base(inp.file_path); if(b) text+=' — '+b; }
+    if(name==='Bash') mono=String(inp.command||'').slice(0,60);
+  }else text='used '+(name||'a tool');
+  return {at,kind:'do',text,mono,raw};
+}
+function resultRow(ev,at,raw){
+  if(ev.subtype==='success'&&!ev.is_error){
+    const cost=typeof ev.total_cost_usd==='number'?ev.total_cost_usd:null;
+    return {at,kind:'end',text:'Finished in '+secs((Number(ev.duration_ms)||0)/1000),costUsd:cost,mono:'',raw};
+  }
+  return {at,kind:'end',text:'Stopped: '+(END_REASON[ev.subtype]||String(ev.subtype||'it stopped early')),mono:'',raw};
+}
+
+async function loadRuns(){
+  try{
+    const d=await api.runs();
+    runs=(d.runs||[]).filter(r=>r&&r.id);
+    activeRun=d.activeRun||null;
+    const ar=runs.find(r=>r.id===activeRun);
+    activeFeature=ar?ar.feature:null;
+    activeStep=ar?ar.step:null;
+    if(sel){ const mine=runs.find(r=>r.feature===sel); if(mine) attachRun(mine.id); }
+    safeRender();
+  }catch(e){}
+}
+function loadUsage(f){
+  if(!f||f.status!=='done') return;
+  const key=runs.filter(r=>r.feature===f.id).map(r=>r.id+':'+r.status).join(',');
+  const entry=usageData[f.id];
+  if(entry&&entry.key===key){
+    const stale=entry.data&&entry.data.error&&(Date.now()-entry.failedAt>30000);
+    if(!stale) return;
+  }
+  usageData[f.id]={data:null,key,loading:true};
+  api.featureUsage(f.id).then(data=>{
+    usageData[f.id]={data,key,loading:false};
+    safeRender();
+  }).catch(err=>{
+    usageData[f.id]={data:{error:true},key,loading:false,failedAt:Date.now(),code:err&&err.code};
+    safeRender();
+  });
+}
+function loadInsights(){
+  if(insightsData.loading) return;
+  if(insightsData.loadedAt&&Date.now()-insightsData.loadedAt<30000) return;
+  insightsData.loading=true;
+  api.insights().then(data=>{
+    insightsData={data,loading:false,loadedAt:Date.now(),error:null};
+    safeRender();
+    if(homeTab==='insights') loadInsightsDominance(data.features);
+  }).catch(err=>{
+    insightsData={data:insightsData.data,loading:false,loadedAt:Date.now(),error:(err&&err.message)||'could not load'};
+    safeRender();
+  });
+}
+function loadAllowance(){
+  if(allowanceData.loading) return;
+  if(allowanceData.loadedAt&&Date.now()-allowanceData.loadedAt<30000) return;
+  allowanceData.loading=true;
+  api.claudeAllowance().then(data=>{
+    allowanceData={data,loading:false,loadedAt:Date.now(),error:null};
+    safeRender();
+  }).catch(err=>{
+    allowanceData={data:allowanceData.data,loading:false,loadedAt:Date.now(),error:(err&&err.message)||'could not load'};
+    safeRender();
+  });
+}
+// Best-effort: fetch the per-request breakdown for finished requests so the home
+// Insights list can flag a dominant stage. Reuses the same cache loadUsage() fills.
+function loadInsightsDominance(items){
+  (items||[]).forEach(it=>{
+    if(!it||!it.recorded) return;
+    const entry=usageData[it.id];
+    if(entry&&(entry.loading||(entry.data&&!entry.data.error))) return;
+    usageData[it.id]={data:null,key:'insights',loading:true};
+    api.featureUsage(it.id).then(data=>{
+      usageData[it.id]={data,key:'insights',loading:false};
+      safeRender();
+    }).catch(err=>{
+      usageData[it.id]={data:{error:true},key:'insights',loading:false,failedAt:Date.now(),code:err&&err.code};
+    });
+  });
+}
+function attachRun(id){
+  if(!id||liveRun===id) return;
+  stopRunPoll();
+  liveRun=id; liveEvents=[]; liveNext=0; liveMeta=null; liveStick=true;
+  pollRun();
+}
+function startRunPoll(){ if(!liveT) liveT=setInterval(pollRun,1000); }
+function stopRunPoll(){ if(liveT){ clearInterval(liveT); liveT=null; } }
+async function pollRun(){
+  const id=liveRun; if(!id) return;
+  let d; try{ d=await api.run(id,liveNext); }catch(e){ return; }
+  if(liveRun!==id||!d.run) return;
+  const was=liveMeta?liveMeta.status:null;
+  liveMeta=d.run; liveNext=Number(d.next)||liveNext;
+  let added=0;
+  for(const ev of d.events||[]) for(const row of translateEvent(ev)){ liveEvents.push(row); added++; }
+  if(liveEvents.length>MAX_LIVE_ROWS) liveEvents.splice(0,liveEvents.length-MAX_LIVE_ROWS);
+  if(d.run.status==='running') startRunPoll();
+  else{
+    stopRunPoll();
+    if(activeRun===id){ activeRun=null; activeFeature=null; activeStep=null; }
+  }
+  if(added||was!==d.run.status) safeRender();
+  if(was==='running'&&d.run.status!=='running'){ poll(); loadRuns(); }
+}
+async function startTeam(step,feature){
+  starting=true; startingStep=step; startingFeature=feature||null; render();
+  try{
+    const d=await api.startRun(feature||null,step);
+    if(d.run){
+      stopRunPoll();
+      liveRun=d.run.id; liveEvents=[]; liveNext=0; liveMeta=d.run; liveStick=true;
+      activeRun=d.run.id; activeFeature=d.run.feature||null; activeStep=d.run.step||step;
+      startRunPoll();
+    }
+    render();
+    loadRuns();
+    if(step==='inbox') toast('Delivering your messages to the team.');
+  }catch(e){
+    if(e.code===503) toast('<b>Claude Code was not found on this computer.</b><br>'+esc(e.message));
+    else toast(esc(e.message));
+  }finally{
+    starting=false; startingStep=null; startingFeature=null; render();
+  }
+}
+function runBtnAttrs(step,feature){
+  const feat=feature||null;
+  const disabled=starting||!!activeRun;
+  const isThis=starting?(startingStep===step&&startingFeature===feat):(!!activeRun&&activeStep===step&&activeFeature===feat);
+  return {disabled, label: isThis?STEP_ACTIVE_TEXT[step]:(disabled?'The team is busy…':null)};
+}
+async function stopRun(){
+  const id=liveRun; if(!id) return;
+  if(!confirm('Stop the team now?')) return;
+  try{ await api.stopRun(id); toast('Stopping the team.'); }
+  catch(e){ toast('Could not stop the team: '+esc(e.message)); }
+}
+
+let lastRaw='';
+async function poll(){
+  try{
+    const s=await api.state();
+    const raw=JSON.stringify(s);
+    if(!online){ online=true; safeRender(); }
+    if(raw!==lastRaw){
+      lastRaw=raw;
+      features=(s.features||[]).slice().sort((a,b)=>(Number(a.n)||0)-(Number(b.n)||0));
+      messages=s.messages||[];
+      if(sel&&!feat()){ history.replaceState(null,'','/'); route(); }
+      safeRender();
+    }
+  }catch(e){ if(online){ online=false; safeRender(); } }
+}
+function busyTyping(){
+  if($('#dlg').open) return true;
+  const a=document.activeElement;
+  return !!a&&/^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName);
+}
+function safeRender(){ if(busyTyping()){ pendingRender=true; return; } render(); }
+document.addEventListener('focusout',()=>setTimeout(()=>{ if(pendingRender&&!busyTyping()){ pendingRender=false; render(); } },80));
+
+/* ---------- render ---------- */
+function render(){ renderNav(); renderAttn(); renderRail(); renderMain(); renderDrawer(); }
+
+function renderNav(){
+  const links=[
+    {href:'/',label:'Requests',glyph:'☰',current:page==='requests'},
+    {href:'/usage',label:'Claude',glyph:'◎',current:page==='claude'}
+  ];
+  $('#nav').innerHTML=links.map(l=>`<a class="navlink" href="${l.href}" title="${esc(l.label)}" aria-label="${esc(l.label)}" ${l.current?'aria-current="page"':''}>${l.glyph}</a>`).join('');
+}
+function renderAttn(){
+  const n=features.filter(needsYou).length;
+  $('#attn').innerHTML=n?`<button class="attn" id="jumpAttn"><i></i>${n} waiting on you</button>`:'';
+}
+function renderRail(){
+  $('#body').classList.toggle('no-rail',page==='claude');
+  $('#rail').hidden=page==='claude';
+  if(page==='claude') return;
+  const groups=[['Waiting on you',features.filter(needsYou)],
+    ['With the team',features.filter(f=>!needsYou(f)&&OPEN.has(f.status))],
+    ['Finished',features.filter(f=>!needsYou(f)&&f.status==='done')]];
+  const body=groups.filter(([,f])=>f.length).map(([label,fs])=>`<div class="group"><span class="eyebrow">${label}</span>${
+    fs.slice().sort((a,b)=>(Number(b.n)||0)-(Number(a.n)||0)).map(f=>{
+      const q=openQ(f.id).length;
+      return `<button class="item" data-open="${esc(f.id)}" aria-current="${f.id===sel}">
+        <span class="t">${esc(f.title||'Untitled request')}</span>
+        <span class="m"><span class="st ${esc(f.status)}">${esc(STATUS[f.status]?.label||f.status)}</span>${activeFeature===f.id?'<span class="st building">running</span>':''}${f.prio==='P1'?'<span class="prio P1">Urgent</span>':''}${q?`<span class="st needs-input">${q} question${q>1?'s':''}</span>`:''}</span></button>`;}).join('')}</div>`).join('');
+  $('#rail').innerHTML=`<div class="rail-top"><span class="eyebrow">Requests</span><button class="btn sm ghost" id="homeBtn">Overview</button></div>`+
+    (body||`<div class="empty">Nothing here yet.<br><br>Press <b>Ask for something</b> and describe what you want in your own words.</div>`);
+}
+/* ---------- claude page: status, subscription, usage, roster, runs ---------- */
+const IND_WORD={none:'operational',minor:'minor issue',maintenance:'maintenance',major:'major outage',critical:'critical outage'};
+const IND_ST={none:'done',minor:'needs-input',maintenance:'needs-input',major:'blocked',critical:'blocked'};
+async function loadClaude(){
+  if(page!=='claude') return;
+  claudeData.loading=true;
+  const results=await Promise.allSettled([
+    api.claudeInfo(),api.claudeStatus(),api.claudeUsage(),api.claudeRoster(),api.runs()
+  ]);
+  const [info,status,usage,roster,rns]=results;
+  claudeData.info=info.status==='fulfilled'?info.value:{error:true};
+  claudeData.status=status.status==='fulfilled'?status.value:{error:true};
+  claudeData.usage=usage.status==='fulfilled'?usage.value:{error:true};
+  claudeData.roster=roster.status==='fulfilled'?roster.value:{error:true};
+  claudeData.runs=rns.status==='fulfilled'?(rns.value.runs||[]):[];
+  claudeData.loading=false; claudeData.loadedAt=Date.now();
+  if(page==='claude') safeRender();
+}
+function startClaudePoll(){ if(!claudeT) claudeT=setInterval(loadClaude,30000); }
+function stopClaudePoll(){ if(claudeT){ clearInterval(claudeT); claudeT=null; } }
+async function claudePing(){
+  if(claudePinging) return;
+  claudePinging=true; renderMain();
+  try{ await api.claudePing(); await loadClaude(); }
+  catch(e){ if(e.code===409) toast(esc(e.message)); else toast('Could not check right now: '+esc(e.message)); }
+  claudePinging=false; renderMain();
+}
+function meterColor(pct,bad){ if(bad||pct>85) return 'red'; if(pct>=60) return 'amber'; return 'green'; }
+function untilText(resetsAt){
+  if(!resetsAt) return '';
+  const ms=resetsAt*1000-Date.now();
+  if(ms<=0) return 'resets soon';
+  const totalMin=Math.floor(ms/60000);
+  return `resets in ${Math.floor(totalMin/60)}h ${totalMin%60}m`;
+}
+function claudeStatusSection(){
+  const s=claudeData.status;
+  let body;
+  if(!s) body=`<p class="hint">Loading…</p>`;
+  else if(s.error) body=`<p class="hint">Could not reach the status page.</p>`;
+  else{
+    const ind=s.overall&&s.overall.indicator;
+    const headline=(s.overall&&s.overall.description)||'Status unknown';
+    const cls=IND_ST[ind]||'needs-input', word=IND_WORD[ind]||ind||'unknown';
+    const comps=(s.components||[]).map(c=>`<span class="who model">${esc(c.name)} — ${esc(String(c.status||'').replace(/_/g,' '))}</span>`).join(' ');
+    body=`<p class="goal" style="margin-bottom:10px">${esc(headline)} <span class="st ${cls}">${esc(word)}</span></p>
+      ${comps?`<p>${comps}</p>`:''}
+      <p class="hint" style="margin-top:10px">checked ${esc(fmt(s.fetchedAt))}</p>`;
+  }
+  return `<section class="blk"><span class="eyebrow">Is Claude up</span>${body}</section>`;
+}
+function claudeSubSection(){
+  const info=claudeData.info;
+  let body;
+  if(!info) body=`<p class="hint">Loading…</p>`;
+  else if(info.error) body=`<p class="hint">Could not load your subscription info.</p>`;
+  else{
+    const rl=info.rateLimit;
+    if(!rl) body=`<p class="hint">No reading yet. It updates every time the team runs, or press Check now.</p>`;
+    else{
+      const bad=rl.status!=='allowed'||rl.isUsingOverage===true;
+      const wins=[['Five-hour window',rl.unifiedWindows&&rl.unifiedWindows.five_hour],['Seven-day window',rl.unifiedWindows&&rl.unifiedWindows.seven_day]];
+      body=`<div class="dl" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">${wins.map(([label,w])=>{
+        if(!w) return `<div><h3>${esc(label)}</h3><p class="hint">No reading yet.</p></div>`;
+        const pct=Math.round((w.utilization||0)*100);
+        return `<div><h3>${esc(label)}</h3><div class="meter"><div class="fill ${meterColor(pct,bad)}" style="width:${Math.min(100,Math.max(0,pct))}%"></div></div>
+          <p class="hint" style="margin-top:6px">${pct}% used · ${esc(untilText(w.resetsAt))}</p></div>`;
+      }).join('')}</div>`;
+    }
+  }
+  const checked=info&&!info.error&&info.rateLimitCheckedAt?`Last checked ${esc(fmt(info.rateLimitCheckedAt))}`:'';
+  return `<section class="blk"><span class="eyebrow">Your subscription</span>${body}
+    <div class="acts" style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      ${checked?`<span class="hint">${checked}</span>`:''}
+      <button class="btn sm ghost" id="claudePingBtn" ${claudePinging?'disabled':''}>${claudePinging?'Checking…':'Check now'}</button>
+      ${tech?`<span class="hint">list price about 3 cents; it is not billed separately from your subscription</span>`:''}
+    </div></section>`;
+}
+function claudeUsageSection(){
+  const u=claudeData.usage;
+  if(!u) return `<section class="blk"><span class="eyebrow">Work done per model</span><p class="hint">Loading…</p></section>`;
+  if(u.error) return `<section class="blk"><span class="eyebrow">Work done per model</span><p class="hint">Could not load token usage.</p></section>`;
+  const days=u.days||[];
+  const last7d=u.last7d||{},last5h=u.last5h||{},byModelDay=u.byModelDay||{};
+  const models=Object.keys(last7d).sort((a,b)=>(last7d[b].output||0)-(last7d[a].output||0));
+  const total5h=Object.values(last5h).reduce((s,x)=>s+(x.output||0),0);
+  const total7d=Object.values(last7d).reduce((s,x)=>s+(x.output||0),0);
+  const modelName=m=>MODEL_NAME[m]||m;
+  const dayLabel=d=>{ const dt=new Date(d+'T00:00:00Z'); return dt.toLocaleDateString([],{weekday:'short',timeZone:'UTC'})+' '+dt.getUTCDate(); };
+  const table=models.length?`<div class="tablewrap"><table class="usage"><thead><tr><th>Words written<br><span class="hint">(counted in tokens; roughly three-quarters of a word each)</span></th>${
+    days.map(d=>`<th>${esc(dayLabel(d))}</th>`).join('')}<th>7 days</th></tr></thead><tbody>${
+    models.map(m=>`<tr><td>${esc(modelName(m))}</td>${
+      days.map(d=>`<td class="num">${(((byModelDay[m]||{})[d]||{}).output||0).toLocaleString()}</td>`).join('')
+    }<td class="num">${(last7d[m].output||0).toLocaleString()}</td></tr>`).join('')
+  }</tbody></table></div>`:`<p class="hint">No usage recorded yet.</p>`;
+  const techTable=(tech&&models.length)?`<div class="tech-block" style="margin-top:14px"><span class="eyebrow">7-day totals, in detail</span>
+    <div class="tablewrap"><table class="usage"><thead><tr><th>Model</th><th>Input</th><th>Cache read</th><th>Cache write</th><th>Messages</th></tr></thead><tbody>${
+      models.map(m=>{ const w=last7d[m]||{}; return `<tr><td>${esc(modelName(m))}</td><td class="num">${(w.input||0).toLocaleString()}</td><td class="num">${(w.cacheRead||0).toLocaleString()}</td><td class="num">${(w.cacheWrite||0).toLocaleString()}</td><td class="num">${(w.messages||0).toLocaleString()}</td></tr>`; }).join('')
+    }</tbody></table></div></div>`:'';
+  return `<section class="blk"><span class="eyebrow">Work done per model</span>
+    <div class="tiles"><div class="tile"><span class="hint">Last 5 hours</span><div class="v num">${total5h.toLocaleString()}</div><div class="d">output tokens, all models</div></div>
+    <div class="tile"><span class="hint">Last 7 days</span><div class="v num">${total7d.toLocaleString()}</div><div class="d">output tokens, all models</div></div></div>
+    ${table}${techTable}
+  </section>`;
+}
+function claudeRosterSection(){
+  const r=claudeData.roster;
+  if(!r) return `<section class="blk"><span class="eyebrow">The team</span><p class="hint">Loading…</p></section>`;
+  if(r.error) return `<section class="blk"><span class="eyebrow">The team</span><p class="hint">Could not load the roster.</p></section>`;
+  const rows=[['senior','Lead engineer'],['mid-dev','Developer'],['junior-dev','Assistant']];
+  return `<section class="blk"><span class="eyebrow">The team</span>
+    <div class="dl">${rows.map(([k,label])=>{ const m=r[k]&&r[k].model; return `<div><h3>${esc(label)}</h3><p>${esc(MODEL_NAME[m]||m||'unknown')}</p></div>`; }).join('')}</div>
+    <p class="hint" style="margin-top:10px">The lead may raise a model for a harder piece of work; each task shows what it used.</p>
+  </section>`;
+}
+function claudeRunsSection(){
+  const rs=claudeData.runs;
+  if(rs===null) return `<section class="blk"><span class="eyebrow">Recent runs</span><p class="hint">Loading…</p></section>`;
+  const list=rs.slice(0,10);
+  if(!list.length) return `<section class="blk"><span class="eyebrow">Recent runs</span><p class="hint">No runs yet. Start one from a request page.</p></section>`;
+  return `<section class="blk"><span class="eyebrow">Recent runs</span><ul class="steps">${list.map(r=>{
+    const what=r.kind==='ping'?'checked the subscription meter':(STEP_TEXT[r.step]||'ran');
+    const st=r.status==='done'?'done':r.status==='failed'?'blocked':'building';
+    const label=r.status==='done'?'finished':r.status==='failed'?'failed':'running';
+    const d=r.status==='running'?'':durText(r.startedAt,r.endedAt);
+    return `<li class="step"><span class="mark">${r.status==='done'?'✓':'·'}</span>
+      <span><span class="t">The team ${esc(what)}${r.feature?` — <a href="${esc(pathFor(r.feature))}">the request</a>`:''}</span>
+      <span class="sub"><span class="st ${st}">${label}</span><span class="hint">${esc(fmt(r.startedAt))}</span>${r.status==='failed'&&r.error?`<span class="hint">${esc(r.error)}</span>`:''}${(r.notes||[]).map(note=>`<span class="hint">${esc(note)}</span>`).join('')}${d?`<span class="hint">took ${esc(d)}</span>`:''}${tech&&typeof r.costUsd==='number'?`<span class="hint">list price $${r.costUsd.toFixed(2)}</span>`:''}</span></span></li>`;
+  }).join('')}</ul></section>`;
+}
+function claudeFooter(){
+  const info=claudeData.info;
+  if(!info||info.error) return '';
+  if(!info.bin) return `<p class="hint">Claude Code was not found on this computer; the board cannot start the team until it is installed.</p>`;
+  return `<p class="hint">Claude Code ${esc(info.version||'')} found at ${esc(info.source||'')}</p>`;
+}
+function claudePage(){
+  return `
+  <div class="doc-head"><h2>Claude</h2><div class="doc-meta"><span>Service status, your subscription and what each model has been doing</span></div></div>
+  <div class="doc-actions"><button class="btn ghost" id="techBtn">${tech?'Hide':'Show'} technical detail</button></div>
+  ${claudeStatusSection()}
+  ${claudeSubSection()}
+  ${claudeUsageSection()}
+  ${claudeRosterSection()}
+  ${claudeRunsSection()}
+  ${claudeFooter()}`;
+}
+function renderMain(){
+  const el=$('#main'),key=page+':'+sel+':'+docTab+':'+homeTab;
+  const keepTop=key===mainKey?el.scrollTop:0;
+  if(page==='claude') el.innerHTML=`<div class="sheet">${offlineNote()}${claudePage()}</div>`;
+  else{ const f=feat(); if(f){ loadUsage(f); if(f.status==='done') loadAllowance(); } else if(homeTab==='insights'){ loadInsights(); loadAllowance(); } el.innerHTML=`<div class="sheet">${offlineNote()}${f?docFor(f):overview()}</div>`; }
+  mainKey=key;
+  if(keepTop) el.scrollTop=keepTop;
+  const rows=$('#liveRows'); if(rows&&liveStick) rows.scrollTop=rows.scrollHeight;
+}
+function offlineNote(){
+  return online?'':`<div class="offline"><b>The board is not connected.</b><br>Start it from the project folder with <span class="mono">node board/serve.js</span>, then reload this page.</div>`;
+}
+function liveRowHtml(r){
+  return `<li><span class="at">${esc(r.at)}</span><span>
+    <span class="${esc(r.kind)}">${esc(r.text)}</span>
+    ${tech&&typeof r.costUsd==='number'?`<span class="hint">list price $${r.costUsd.toFixed(2)}</span>`:''}
+    ${tech&&r.mono?`<span class="cmdline">${esc(r.mono)}</span>`:''}
+    ${r.full?`<details class="tech"><summary>Show the whole message</summary><div class="copybox" style="margin-top:6px;font-family:var(--sans);font-size:13px">${esc(r.full)}</div></details>`:''}
+    ${tech&&r.raw?`<details class="tech"><summary>Raw event</summary><div class="copybox" style="margin-top:6px">${esc(r.raw)}</div></details>`:''}
+  </span></li>`;
+}
+function livePanel(f){
+  if(!liveMeta||liveMeta.feature!==f.id) return '';
+  const running=liveMeta.status==='running';
+  const end=liveEvents.slice().reverse().find(r=>r.kind==='end');
+  const note=running?'':(end?end.text:(liveMeta.status==='failed'?(typeof liveMeta.error==='string'&&liveMeta.error?liveMeta.error:'Stopped before it finished.'):'Finished.'));
+  let leadLine='';
+  if(running&&liveMeta.lead){
+    if(liveMeta.lead.paused) leadLine=`<p class="hint">The lead paused so the run does not snowball; the board is starting a fresh session.</p>`;
+    else if(typeof liveMeta.lead.context==='number') leadLine=`<p class="hint">The lead is carrying ${words(liveMeta.lead.context)} words of context, budget ${words(liveMeta.lead.budget)}.</p>`;
+  }
+  return `<div class="live">
+    <div class="lh">${running?'<i class="dot"></i>':''}<h3>${running?'What the team is doing':'What the team did'}</h3>
+      ${running?'<button class="btn sm ghost" id="stopRun">Stop</button>':''}</div>
+    ${note?`<p class="hint">${esc(note)}</p>`:''}
+    ${leadLine}
+    ${Array.isArray(liveMeta.notes)&&liveMeta.notes.length?liveMeta.notes.map(note=>`<p class="hint">${esc(note)}</p>`).join(''):''}
+    <ul class="log rows" id="liveRows">${liveEvents.length?liveEvents.map(liveRowHtml).join('')
+      :`<li><span class="at"></span><span class="hint">${running?'Waiting for the first sign of life…':'Nothing was recorded for this run.'}</span></li>`}</ul>
+  </div>`;
+}
+function runsSection(f){
+  const rs=runs.filter(r=>r.feature===f.id).slice(0,5);
+  if(!rs.length) return '';
+  return `<section class="blk"><span class="eyebrow">Recent runs</span><ul class="steps">${rs.map(r=>{
+    const st=r.status==='running'?'building':r.status==='done'?'done':'blocked';
+    const label=r.status==='running'?'running':r.status==='done'?'finished':'stopped';
+    const d=r.status==='running'?'':durText(r.startedAt,r.endedAt);
+    return `<li class="step" data-run="${esc(r.id)}" style="cursor:pointer"><span class="mark">${r.status==='done'?'✓':'·'}</span>
+      <span><span class="t">The team ${esc(STEP_TEXT[r.step]||'ran')}</span>
+        <span class="sub"><span class="st ${st}">${label}</span><span class="hint">${esc(fmt(r.startedAt))}</span>${r.status==='failed'&&r.error?`<span class="hint">${esc(r.error)}</span>`:''}${(r.notes||[]).map(note=>`<span class="hint">${esc(note)}</span>`).join('')}${d?`<span class="hint">took ${esc(d)}</span>`:''}${tech&&typeof r.costUsd==='number'?`<span class="hint">list price $${r.costUsd.toFixed(2)}</span>`:''}${r.lead&&typeof r.lead.context==='number'?`<span class="hint">the lead's memory reached ${words(r.lead.context)} words</span>`:''}${tech&&r.effort?`<span class="hint">effort: ${esc(r.effort)}</span>`:''}</span></span>
+      <span class="rt">${r.id===liveRun?'showing':'show'}</span></li>`;}).join('')}</ul>
+    <p class="hint" style="margin-top:8px">Pick one to read what the team did that time.</p></section>`;
+}
+const HOME_TABS=[['overview','Overview'],['insights','Insights']];
+function overviewBody(done,waiting,forTeam,tasks,cnt,rework,helped){
+  return `
+  ${forTeam.length?(()=>{const st=runBtnAttrs('inbox',null);return `<div class="panel calm"><h3>${forTeam.length} request${forTeam.length===1?' is':'s are'} waiting for the team</h3>
+    <p class="lede">The team picks this up when you press the button.</p><div class="acts"><button class="btn primary" id="startInboxHome" ${st.disabled?'disabled':''}>${esc(st.label||'Deliver my messages and start the team')}</button></div></div>`;})():''}
+  ${waiting.length?`<section class="blk"><span class="eyebrow">Waiting on you</span><ul class="steps">${waiting.map(f=>`
+    <li class="step" data-open="${esc(f.id)}" style="cursor:pointer"><span class="mark">!</span>
+      <span><span class="t">${esc(f.title)}</span><span class="sub"><span class="st ${esc(f.status)}">${esc(STATUS[f.status]?.label)}</span><span class="hint">${esc(STATUS[f.status]?.note||'')}</span></span></span><span class="rt">open</span></li>`).join('')}</ul></section>`:''}
+  <section class="blk"><span class="eyebrow">The team so far</span>
+    <div class="tiles">
+      <div class="tile"><span class="hint">Finished</span><div class="v num">${done.length}</div><div class="d">of ${features.length} asked for</div></div>
+      <div class="tile"><span class="hint">Pieces of work</span><div class="v num">${tasks.length}</div><div class="d">${helped} needed help · ${rework} redone</div></div>
+      <div class="tile"><span class="hint">Done by the lead</span><div class="v num">${tasks.length?Math.round(cnt.SENIOR/tasks.length*100):0}%</div><div class="d">the rest went to the team</div></div>
+    </div>
+    <p class="hint">The lead engineer plans and reviews. The developer builds features. The assistant does small, well defined jobs. Keeping the lead's share low is what makes the team cheap to run.</p>
+  </section>
+  <section class="blk"><span class="eyebrow">How this works</span>
+    <ul class="steps">
+      <li class="step"><span class="mark">1</span><span><span class="t">You describe what you want</span><div class="hint">In plain words. No technical detail needed.</div></span></li>
+      <li class="step"><span class="mark">2</span><span><span class="t">The lead reads it back to you</span><div class="hint">You check it understood you, answer its questions, then approve.</div></span></li>
+      <li class="step"><span class="mark">3</span><span><span class="t">The team plans, and you approve the plan</span><div class="hint">Nothing is built until you say go. You can add more context and get a fresh plan first.</div></span></li>
+      <li class="step"><span class="mark">4</span><span><span class="t">The team builds and checks it</span><div class="hint">You can follow along and ask questions at any point.</div></span></li>
+      <li class="step"><span class="mark">5</span><span><span class="t">You get a plain summary of what changed</span></span></li>
+    </ul>
+    <p class="hint" style="margin-top:12px">The team checks this board every couple of minutes, so you never have to go and fetch it. Anything you send or approve here is picked up on its own.</p>
+  </section>`;
+}
+function insightsRow(it){
+  const tokText=it.recorded&&it.tokens&&it.tokens.total!=null?fmtTokens(it.tokens.total)+' tokens':'no usage was recorded';
+  const shareText=it.recorded?allowanceHeadlineText(it.allowance):'';
+  const sizeText=it.size?SIZE_TEXT[it.size]:'';
+  const fc=it.forecast||{};
+  const pill=fc.cost?`<span class="cost ${esc(fc.cost)}">${esc(COST_TEXT[fc.cost]||fc.cost)}</span>`:'';
+  const leadText=(it.lead&&typeof it.lead.readsPerRun==='number')
+    ?`the lead read ${words(it.lead.readsPerRun)} words per run${typeof it.lead.change==='number'?` (${pctVsBase(it.lead.change,'F-10')})`:''}`:'';
+  const dominant=usageData[it.id]&&usageData[it.id].data&&usageData[it.id].data.dominantStep;
+  const dominantText=dominant?`most of it went on ${STAGE_LABEL[dominant.step]||dominant.step} (${Math.round(dominant.share*100)}%)`:'';
+  return `<li class="step" data-open="${esc(it.id)}" style="cursor:pointer"><span class="mark">✓</span>
+    <span><span class="t">${esc(it.title)}</span>
+      <span class="sub">${pill}<span class="hint">${esc(tokText)}</span>${shareText?`<span class="hint">${esc(shareText)}</span>`:''}${sizeText?`<span class="hint">${esc(sizeText)}</span>`:''}${dominantText?`<span class="hint">${esc(dominantText)}</span>`:''}${fc.plain?`<span class="hint">${esc(fc.plain)}</span>`:''}${leadText?`<span class="hint">${esc(leadText)}</span>`:''}</span>
+      ${tech?`<div class="tech">${Number(it.runs)||0} run${Number(it.runs)===1?'':'s'}</div>`:''}</span>
+    <span class="rt">${esc(fmt(it.finishedAt))}</span></li>`;
+}
+function insightsBody(){
+  const st=insightsData;
+  if(!st.data){
+    if(st.error) return `<section class="blk"><span class="eyebrow">Finished requests</span><p class="hint">Could not load the insights.</p></section>`;
+    return `<section class="blk"><span class="eyebrow">Finished requests</span><p class="hint">Loading…</p></section>`;
+  }
+  const items=st.data.features||[];
+  const list=items.length?`<ul class="steps">${items.map(insightsRow).join('')}</ul>`:`<p class="hint">Nothing has finished yet.</p>`;
+  const lessons=(st.data.lessons||[]).filter(x=>tech||!/\$/.test(x));
+  return `
+  ${st.error?`<p class="hint" style="color:var(--red);margin-bottom:12px">Could not load the insights. Showing what we last had.</p>`:''}
+  <section class="blk"><span class="eyebrow">Finished requests, newest first</span>${list}</section>
+  <section class="blk"><span class="eyebrow">What the team has learned</span>
+    ${lessons.length?`<ul>${lessons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<p class="hint">Nothing recorded yet.</p>`}</section>`;
+}
+function overview(){
+  const done=features.filter(f=>f.status==='done');
+  const waiting=features.filter(needsYou);
+  const forTeam=features.filter(f=>['new','ready','building'].includes(f.status));
+  const tasks=features.flatMap(f=>f.tasks||[]);
+  const cnt={SENIOR:0,MID:0,JUNIOR:0}; tasks.forEach(t=>{ if(cnt[t.level]!=null) cnt[t.level]++; });
+  const rework=tasks.reduce((s,t)=>s+Math.max(0,(Number(t.attempts)||1)-1),0);
+  const helped=tasks.filter(t=>t.escalated||t.status==='escalated').length;
+  const tabs=`<div class="tabs" role="tablist">${HOME_TABS.map(([k,label])=>`<button class="tab" role="tab" data-hometab="${k}" aria-selected="${k===homeTab}">${label}</button>`).join('')}</div>`;
+  return `
+  <div class="doc-head"><h2>What you asked for, and how it is going</h2>
+    <div class="doc-meta">${features.length} request${features.length===1?'':'s'} · ${done.length} finished</div></div>
+  <div class="doc-actions"><button class="btn primary" id="newBtn2">Ask for something</button>${waiting.length?`<button class="btn warn" id="jumpAttn">${waiting.length} waiting on you</button>`:''}</div>
+  ${tabs}
+  ${homeTab==='insights'?insightsBody():overviewBody(done,waiting,forTeam,tasks,cnt,rework,helped)}`;
+}
+
+function usageStageRow(steps,key,label){
+  const st=(steps&&steps[key])||{recorded:false,tokens:null};
+  return `<div><h3>${esc(label)}</h3><p>${st.recorded&&st.tokens?fmtTokens(st.tokens.total)+' tokens':'not recorded'}</p></div>`;
+}
+function usageSection(f){
+  if(f.status!=='done') return '';
+  const entry=usageData[f.id];
+  let body;
+  if(!entry||entry.loading) body=`<p class="hint">Working it out…</p>`;
+  else if(entry.data.error) body=`<p class="hint">${entry.code===404?'The board is running an older version of its program. Stop it and start it again, and the figures will appear.':'Could not load the cost report. The board will try again shortly.'}</p>`;
+  else if(!entry.data.recorded) body=`<p class="hint">No usage was recorded for this request.</p>`;
+  else{
+    const data=entry.data;
+    const cost=data.forecast&&data.forecast.cost;
+    const pill=cost?`<span class="cost ${esc(cost)}">${esc(COST_TEXT[cost]||cost)}</span> `:'';
+    const totalTok=data.tokens?data.tokens.total:null;
+    const sizeText=f.size?SIZE_TEXT[f.size]:'';
+    const verdict=`<p class="goal" style="margin-bottom:10px">${pill}${totalTok!=null?fmtTokens(totalTok)+' tokens used':'no tokens recorded'} over ${data.runs.length} run${data.runs.length===1?'':'s'}${sizeText?', '+sizeText:''}, ${esc(data.forecast.plain)}</p>`;
+    const allowanceSection=`<div style="margin-top:14px">${allowanceBlock(data.allowance)}</div>`;
+    const dominantHint=data.dominantStep?`<p class="hint" style="margin-top:8px">Most of it went on ${STAGE_LABEL[data.dominantStep.step]||data.dominantStep.step} (${Math.round(data.dominantStep.share*100)}% of the tokens).</p>`:'';
+    const nb=data.neighbours;
+    let neighboursBlock='';
+    if(tech&&nb&&nb.items&&nb.items.length){
+      const list=nb.items.map(x=>`${esc(x.title||'a similar request')} (${typeof x.totalCostUsd==='number'?'list price $'+x.totalCostUsd.toFixed(2):'no figure recorded'})`).join(' and ');
+      const changeText=nb.change==null?'':` That is ${Math.round(Math.abs(nb.change)*100)}% ${nb.change<0?'less':'more'} than ${nb.items.length===1?'it cost':'their average'}.`;
+      neighboursBlock=`<div class="tech-block" style="margin-top:14px"><span class="eyebrow">Compared with similar-sized requests, by list price</span><p>The most recent ${nb.items.length===1?'request':'requests'} about this size ${nb.items.length===1?'was':'were'} ${list}.${changeText} List price is for comparison only; it is not a charge on top of your subscription.</p></div>`;
+    }
+    const modelRows=Object.entries(data.models||{}).sort((a,b)=>(b[1].total||0)-(a[1].total||0));
+    const modelCols=[
+      {h:'Model',v:([m])=>esc(MODEL_NAME[m]||m)},
+      {h:'Runs',v:([,b])=>String(b.runs||0),num:true},
+      {h:'Input',v:([,b])=>(b.input||0).toLocaleString(),num:true},
+      {h:'Output',v:([,b])=>(b.output||0).toLocaleString(),num:true},
+      {h:'Cache read',v:([,b])=>(b.cacheRead||0).toLocaleString(),num:true},
+      {h:'Share of allowance',v:([,b])=>{ const s=shareOfWindow(b.total,'five_hour'); return s==null?'—':Math.round(s*100)+'%'; },num:true},
+      {h:'Average per run',v:([,b])=>b.avgTotalPerRun!=null?fmtTokens(Math.round(b.avgTotalPerRun)):'—',num:true},
+      {h:'Peak per run',v:([,b])=>b.maxTotalPerRun!=null?fmtTokens(b.maxTotalPerRun):'—',num:true}
+    ];
+    const visibleCols=modelRows.length<=1?modelCols:modelCols.filter(c=>new Set(modelRows.map(r=>c.v(r))).size>1);
+    const table=modelRows.length?`<div class="tablewrap"><table class="usage"><thead><tr>${visibleCols.map(c=>`<th>${esc(c.h)}</th>`).join('')}</tr></thead><tbody>${
+      modelRows.map(r=>`<tr>${visibleCols.map(c=>`<td${c.num?' class="num"':''}>${c.v(r)}</td>`).join('')}</tr>`).join('')
+    }</tbody></table></div>`:'';
+    const stages=`<div class="dl" style="margin-top:14px">${usageStageRow(data.steps,'read','Read back')}${usageStageRow(data.steps,'plan','Planned')}${usageStageRow(data.steps,'build','Built')}</div>`;
+    const unrecordedHint=data.unrecorded>0?`<p class="hint" style="margin-top:10px">${data.unrecorded===1?'One run was not recorded, so the real total is higher.':data.unrecorded+' runs were not recorded, so the real total is higher.'}</p>`:'';
+    const lessonLines=(data.lessons||[]).filter(x=>tech||!/\$/.test(x));
+    const lessons=lessonLines.length?`<div style="margin-top:16px"><h3>Lessons for next time</h3><ul>${lessonLines.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';
+    const techTable=(tech&&modelRows.length)?`<div class="tech-block" style="margin-top:14px"><span class="eyebrow">In detail, list price for comparison only — not a charge on top of your subscription</span>
+      <div class="tablewrap"><table class="usage"><thead><tr><th>Model</th><th>Cache write</th><th>List price</th></tr></thead><tbody>${
+        modelRows.map(([m,b])=>`<tr><td>${esc(MODEL_NAME[m]||m)}</td><td class="num">${(b.cacheWrite||0).toLocaleString()}</td><td class="num">$${(b.costUsd||0).toFixed(2)}</td></tr>`).join('')
+      }</tbody></table></div>
+      <p class="hint" style="margin-top:8px">List price across all models: $${(data.totalCostUsd||0).toFixed(2)}.</p></div>`:'';
+    const leadRuns=(data.runs||[]).filter(r=>r.lead&&r.lead.recorded);
+    const STEP_LABEL={read:'Reading it back',plan:'Planning',build:'Building'};
+    let leadBlock='';
+    if(leadRuns.length){
+      const rows=leadRuns.map(r=>{
+        const l=r.lead;
+        const cachePct=l.reads?Math.round(l.cacheRead/l.reads*100):0;
+        const big=l.toolResults&&l.toolResults.big||0;
+        return `<p>${esc(STEP_LABEL[r.step]||'Working')}: read ${words(l.reads)} words over ${l.turns} turn${l.turns===1?'':'s'}, ${cachePct}% from cache; ${words(l.cacheWrite)} new words entered its memory; it wrote ${words(l.output)}; ${big} large result${big===1?'':'s'} pulled in whole.</p>`;
+      }).join('');
+      let perRunLine='';
+      if(data.lead.baseline) perRunLine=`<p>Per run the lead read ${words(data.lead.readsPerRun)} words, ${pctVsBase(data.lead.baseline.readsPerRun.change,data.lead.baseline.feature)}.</p>`;
+      else if(data.feature==='F-10') perRunLine=`<p>This is the baseline request the others are compared with.</p>`;
+      leadBlock=`<div style="margin-top:16px"><h3>What the lead engineer read</h3>${rows}${perRunLine}</div>`;
+    }
+    body=`${verdict}${allowanceSection}${dominantHint}${table}${leadBlock}${stages}${unrecordedHint}${lessons}${neighboursBlock}${techTable}`;
+  }
+  return `<section class="blk"><span class="eyebrow">What it used</span>${body}</section>`;
+}
+const DOC_TABS=[['request','Request'],['progress','Progress'],['insights','Insights'],['history','History']];
+function docTabFor(f){ return docTab||(f.plan?'progress':'request'); }
+function requestTab(f){
+  return `
+  ${f.raw?`<section class="blk"><span class="eyebrow">In your words</span><div class="said">${esc(f.raw)}</div></section>`:''}
+  ${(f.context||[]).length?`<section class="blk"><span class="eyebrow">What you added along the way</span>${f.context.slice().reverse().map(c=>`<div style="margin-bottom:14px"><p class="hint" style="margin-bottom:4px">${esc(fmt(c.at))}</p><div class="said">${esc(c.text)}</div></div>`).join('')}</section>`:''}
+  ${f.goal?`<section class="blk"><span class="eyebrow">What the team understood</span>
+    <p class="goal">${esc(f.goal)}</p>
+    <div class="dl">
+      ${f.why?`<div><h3>Why it matters</h3><p>${esc(f.why)}</p></div>`:''}
+      ${f.must?.length?`<div><h3>Done when</h3><ul class="check ${f.status==='done'?'ok':''}">${f.must.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+      ${f.mustNot?.length?`<div><h3>Left alone</h3><ul class="no">${f.mustNot.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+      ${f.assumptions?.length?`<div><h3>Assumed, because you did not say</h3><ul>${f.assumptions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+      ${(f.questions||[]).filter(q=>q.a).length?`<div><h3>You answered</h3><ul>${f.questions.filter(q=>q.a).map(q=>`<li>${esc(q.q)}<br><b>${esc(q.a)}</b></li>`).join('')}</ul></div>`:''}
+    </div>
+    ${tech?`<div class="tech-block"><span class="eyebrow">The card the team receives</span><div class="copybox">${esc(cardText(f))}</div>
+      <div style="margin-top:8px"><button class="btn sm" data-copy="${esc(cardText(f))}">Copy card</button></div></div>`:''}
+  </section>`:''}`;
+}
+function progressTab(f){
+  return `
+  ${f.plan?`<section class="blk"><span class="eyebrow">${f.plan.round>1?`The plan, round ${f.plan.round}`:'The plan'}</span>
+    <p class="summary">${esc(f.plan.plain||f.plan.approach||'')}</p>
+    ${f.plan.risks?.length?`<div class="dl" style="margin-top:14px"><div><h3>Worth knowing</h3><ul>${f.plan.risks.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`:''}
+    ${tech&&f.plan.approach?`<div class="tech-block"><span class="eyebrow">Technical approach</span><p>${esc(f.plan.approach)}</p>${f.plan.patterns?.length?`<ul>${f.plan.patterns.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`:''}
+  </section>`:''}
+  ${runsSection(f)}
+  ${(f.tasks||[]).length?`<section class="blk"><span class="eyebrow">The work</span><ul class="steps">${f.tasks.map(stepRow).join('')}</ul></section>`:''}
+  ${f.report?`<section class="blk"><span class="eyebrow">What changed</span>
+    <p class="summary">${esc(f.report.plain||f.report.summary||'')}</p>
+    ${f.report.deferred?.length?`<div class="dl" style="margin-top:14px"><div><h3>Left for later</h3><ul>${f.report.deferred.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`:''}
+    ${f.report.followups?.length?`<div class="dl" style="margin-top:12px"><div><h3>Worth deciding next</h3><ul>${f.report.followups.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`:''}
+    ${f.report.tests?.length?`<div class="dl" style="margin-top:12px"><div><h3>Checks run</h3><ul class="check ok">${f.report.tests.map(t=>`<li>${esc(t.plain||t.cmd)} <span class="${/pass|ok|green/i.test(t.result)?'pass':'fail'}">${esc(t.result)}</span></li>`).join('')}</ul></div></div>`:''}
+    ${tech?`<div class="tech-block"><span class="eyebrow">Technical detail</span>
+      ${f.report.summary&&f.report.plain?`<p style="margin-bottom:8px">${esc(f.report.summary)}</p>`:''}
+      ${f.report.files?.length?`<div><b>Files</b><ul>${f.report.files.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+      ${f.report.tests?.length?`<div style="margin-top:8px"><b>Commands</b><ul>${f.report.tests.map(t=>`<li>${esc(t.cmd)} → <span class="${/pass|ok|green/i.test(t.result)?'pass':'fail'}">${esc(t.result)}</span></li>`).join('')}</ul></div>`:''}
+    </div>`:''}
+  </section>`:''}`;
+}
+function insightsTab(f){
+  const cost=usageSection(f)||`<section class="blk"><span class="eyebrow">What it used</span><p class="hint">The figures appear here once the request is finished.</p></section>`;
+  const expected=(f.plan&&(f.plan.forecast||f.plan.lessons?.length))?`<section class="blk"><span class="eyebrow">What we expected</span>
+    ${f.plan.forecast?`<div class="dl" style="margin-top:14px"><div><h3>Expected size</h3><p><span class="cost ${esc(f.plan.forecast.cost)}">${esc(COST_TEXT[f.plan.forecast.cost]||f.plan.forecast.cost)}</span> ${esc(f.plan.forecast.plain)}</p></div></div>`:''}
+    ${f.plan.lessons?.length?`<div class="dl" style="margin-top:14px"><div><h3>What earlier requests taught us</h3><ul>${f.plan.lessons.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>`:''}
+  </section>`:'';
+  return `
+  ${cost}
+  ${expected}`;
+}
+function historyTab(f){
+  return `
+  ${(f.log||[]).length?`<section class="blk"><span class="eyebrow">History</span>
+    <ul class="log">${f.log.slice().reverse().map(l=>`<li><span class="at">${fmt(l.at)}</span><span>${esc(l.text)}${l.who&&l.who!=='you'?` <span class="hint">— ${esc(AGENT_NAME[l.who]||l.who)}</span>`:''}</span></li>`).join('')}</ul></section>`:''}`;
+}
+function docFor(f){
+  const s=STATUS[f.status]||{label:f.status,note:''};
+  const tab=docTabFor(f);
+  const body=tab==='progress'?progressTab(f):tab==='insights'?insightsTab(f):tab==='history'?historyTab(f):requestTab(f);
+  return `
+  <div class="doc-head"><h2>${esc(f.title||'Untitled request')}</h2>
+    <div class="doc-meta"><span class="st ${esc(f.status)}">${esc(s.label)}</span><span>${esc(PRIO[f.prio]||'')}</span><span>asked ${fmt(f.createdAt)}</span>${f.size?`<span>${esc(SIZE_TEXT[f.size]||'')}</span>`:''}</div></div>
+  <div class="doc-actions">
+    <button class="btn" id="talkBtn">Talk to the team</button>
+    <button class="btn ghost" id="techBtn">${tech?'Hide':'Show'} technical detail</button>
+    <div style="flex:1"></div>
+    <button class="btn ghost danger" id="delBtn">Delete</button>
+  </div>
+  ${actionPanel(f)}
+  ${livePanel(f)}
+  ${openQ(f.id).map(qPanel).join('')}
+  <div class="tabs" role="tablist">${DOC_TABS.map(([k,label])=>`<button class="tab" role="tab" data-doctab="${k}" aria-selected="${k===tab}">${label}</button>`).join('')}</div>
+  ${body}`;
+}
+
+function stepRow(t){
+  const cls=t.status==='done'?'done':t.status==='running'?'running':'';
+  const stronger=t.model&&t.level&&t.model!==DEFAULT_MODEL[t.level]&&t.model!==WAS_DEFAULT[t.level];
+  return `<li class="step ${cls}" data-task="${esc(t.id)}" data-agent="${esc(t.agent||'')}" style="cursor:pointer">
+    <span class="mark">${t.status==='done'?'✓':t.status==='running'?'·':''}</span>
+    <span><span class="t">${esc(t.title)}</span>
+      <span class="sub"><span class="who ${esc(t.level)}">${esc(ROLE[t.level]||t.level)}</span>${t.model?`<span class="who model">${esc(MODEL_NAME[t.model]||t.model)}</span>`:''}${t.cost?`<span class="cost ${esc(t.cost)}">${esc(COST_TEXT[t.cost]||t.cost)}</span>`:''}${stronger?'<span class="hint">stronger than usual</span>':''}<span class="hint">${esc(TASK_STATUS[t.status]||t.status)}</span>${t.escalated?'<span class="st needs-input">asked for help</span>':''}${(Number(t.attempts)||1)>1?`<span class="hint">redone ${Number(t.attempts)-1}×</span>`:''}</span>
+      ${tech&&t.modelWhy?`<div class="tech"><div>Why this model: ${esc(t.modelWhy)}</div>${(t.detail||t.note)?`<div>${esc(t.detail||t.note)}</div>`:''}</div>`:tech&&(t.detail||t.note)?`<div class="tech">${esc(t.detail||t.note)}</div>`:''}</span>
+    <span class="rt"></span></li>`;
+}
+
+function actionPanel(f){
+  const cutOffHint=f.interrupted&&!f.interrupted.resumedAt?`<p class="hint">The last run was cut off: ${esc(f.interrupted.why)}. Press the button to start it again.</p>`:'';
+  if(f.status==='new'){
+    const st=runBtnAttrs('read',f.id);
+    return `<div class="panel calm"><h3>Sent. The lead engineer has not looked at it yet.</h3>
+      <p class="lede">The team will read this back to you here, without writing any code.</p>
+      ${cutOffHint}
+      <div class="acts"><button class="btn primary" id="startRead" ${st.disabled?'disabled':''}>${esc(st.label||'Read it back now')}</button></div></div>`;
+  }
+  if(f.status==='spec-review')
+    return `<div class="panel"><h3>Check we understood you</h3>
+      <p class="lede">Change anything that is wrong. Nothing is built until you approve.</p>
+      <div class="qa">
+        <div class="field"><label for="eGoal">When this is finished…</label><textarea id="eGoal" style="min-height:52px;font-family:var(--serif);font-size:16px">${esc(f.goal||'')}</textarea></div>
+        <div class="field"><label for="eDone">It is done when — one per line</label><textarea id="eDone" style="min-height:110px">${esc((f.must||[]).join('\n'))}</textarea></div>
+        <div class="field"><label for="eNot">Leave alone — one per line</label><textarea id="eNot" style="min-height:48px" placeholder="Nothing in particular">${esc((f.mustNot||[]).join('\n'))}</textarea></div>
+        ${(f.assumptions||[]).length?`<div class="field"><label for="eAssume">We assumed, because you did not say</label><textarea id="eAssume" style="min-height:48px">${esc(f.assumptions.join('\n'))}</textarea></div>`:''}
+      </div>
+      ${(f.questions||[]).length?`<div style="margin-top:12px"><span class="eyebrow">A few things we need to know</span>
+        ${f.questions.map((q,i)=>`<div class="qa"><div class="q">${esc(q.q)}</div><textarea data-qi="${i}" placeholder="Your answer">${esc(q.a||'')}</textarea></div>`).join('')}</div>`:''}
+      <div class="acts"><button class="btn warn" id="approveSpec">Yes, this is right — plan it</button></div></div>`;
+  if(f.status==='ready'){
+    const st=runBtnAttrs('plan',f.id);
+    return `<div class="panel calm"><h3>${f.plan?'Waiting to be planned again with what you added.':'Approved. Waiting to be planned.'}</h3>
+      <p class="lede">The team will work out how to do it and stop for your approval before writing any code.</p>
+      ${cutOffHint}
+      <div class="acts"><button class="btn primary" id="startPlan" ${st.disabled?'disabled':''}>${esc(st.label||(f.plan?'Plan it again now':'Plan it now'))}</button></div></div>`;
+  }
+  if(f.status==='plan-review')
+    return `<div class="panel"><h3>The plan is ready for your OK${f.plan&&f.plan.round>1?` (round ${f.plan.round})`:''}</h3>
+      <p class="lede">This is how they plan to do it, and who does what. No code is written until you approve.</p>
+      ${f.plan?`<div class="qa"><div style="font-family:var(--serif);font-size:16.5px;line-height:1.5;white-space:pre-wrap">${esc(f.plan.plain||f.plan.approach)}</div>
+        ${f.plan.forecast?`<p class="hint" style="margin-top:8px"><span class="cost ${esc(f.plan.forecast.cost)}">${esc(COST_TEXT[f.plan.forecast.cost]||f.plan.forecast.cost)}</span> ${esc(f.plan.forecast.plain)}</p>`:''}
+        ${(f.tasks||[]).length?`<ul class="steps" style="margin-top:12px">${f.tasks.map(stepRow).join('')}</ul>`:''}</div>`:''}
+      <div class="acts"><button class="btn warn" id="approvePlan">Go ahead, build it</button><button class="btn" id="changePlan">Add more context, plan it again</button></div>
+      <div id="changeBox" hidden style="margin-top:12px">
+        <div class="field"><label for="changeText">Tell the lead engineer what else they should know. They will write a fresh plan and stop for your OK again.</label><textarea id="changeText" placeholder="What should be different? Plain words are fine."></textarea></div>
+        <div class="acts"><button class="btn primary sm" id="sendChange">Send it and plan again</button></div></div></div>`;
+  if(f.interrupted&&!f.interrupted.resumedAt&&(f.status==='building'||f.status==='checking')){
+    const {at,why,resumeFromTitle}=f.interrupted;
+    const pickUp=resumeFromTitle?`the team will pick up from “${esc(resumeFromTitle)}”.`:'the team will pick up from the final check.';
+    const st=runBtnAttrs('resume',f.id);
+    return `<div class="panel"><h3>The team was cut off before it finished</h3>
+      <p class="lede">The run stopped ${esc(fmt(at))}: ${esc(why)}. The pieces already accepted are kept; ${pickUp}</p>
+      <div class="acts"><button class="btn primary" id="startResume" ${st.disabled?'disabled':''}>${esc(st.label||'Resume from where it stopped')}</button></div></div>`;
+  }
+  if(f.status==='building'&&(f.tasks||[]).every(t=>t.status==='todo')){
+    const st=runBtnAttrs('build',f.id);
+    return `<div class="panel calm"><h3>Approved. The team can start building.</h3>
+      <p class="lede">Everything is ready for the team to start building.</p>
+      <div class="acts"><button class="btn primary" id="startBuild" ${st.disabled?'disabled':''}>${esc(st.label||'Build it now')}</button></div></div>`;
+  }
+  if(f.status==='blocked')
+    return `<div class="panel"><h3>The team is stuck</h3><p class="lede">${esc(f.blockedReason||'The lead engineer could not continue. Check the history below.')}</p>
+      ${cutOffHint}
+      <div class="acts"><button class="btn" id="talkBtn2">Talk to the lead</button></div></div>`;
+  return '';
+}
+function qPanel(m){
+  return `<div class="panel" data-q="${esc(m.id)}"><h3>${esc(AGENT_NAME[m.from]||m.from)} needs a decision</h3>
+    <p class="lede">Asked ${fmt(m.createdAt)}. The team has stopped until you answer.</p>
+    <div class="qa"><div class="q">${esc(m.text)}</div><textarea placeholder="Your answer, in your own words." aria-label="Your answer"></textarea>
+      <div class="acts"><button class="btn warn sm" data-answer="${esc(m.id)}">Send answer</button></div></div></div>`;
+}
+
+function renderDrawer(){
+  const d=$('#drawer'),f=feat();
+  const show=drawerOpen&&!!f;
+  d.classList.toggle('open',show); $('#scrim').classList.toggle('open',show);
+  if(!show){ d.innerHTML=''; return; }
+  const th=threadFor(f.id,agentTab);
+  const queued=AGENTS.reduce((n,a)=>n+queuedTo(f.id,a),0);
+  const inboxSt=runBtnAttrs('inbox',null);
+  d.innerHTML=`
+  <div class="drawer-head"><div class="row"><h3>Talk to the team</h3><button class="btn sm ghost" id="closeDrawer">Close</button></div>
+    <p class="hint">About “${esc(f.title)}”</p>
+    <div class="tabs" role="tablist">${AGENTS.map(a=>{const q=queuedTo(f.id,a);return `<button class="tab" role="tab" data-agent="${a}" aria-selected="${a===agentTab}">${esc(AGENT_NAME[a].replace('the ',''))}${q?`<span class="n">${q}</span>`:''}</button>`;}).join('')}</div></div>
+  <div class="thread" id="thread">
+    ${th.length?th.map(m=>`<div class="msg ${m.from==='human'?'me':''}">
+      <div class="from">${esc(m.from==='human'?'You':AGENT_NAME[m.from]||m.from)}${m.task?` · ${esc(m.task)}`:''} · ${fmt(m.createdAt)}</div>
+      <div class="bubble">${esc(m.text)}</div>
+      ${m.from==='human'&&m.status==='queued'?`<div class="pend">Sent. Waiting for the team to pick it up.</div>`:''}</div>`).join('')
+      :`<p class="hint">Nothing said to ${esc(AGENT_NAME[agentTab])} about this request yet.</p>`}
+  </div>
+  <form class="composer" id="composer">
+    <div class="r">
+      <select id="cTask" aria-label="About"><option value="">the whole request</option>${(f.tasks||[]).map(t=>`<option value="${esc(t.id)}" ${t.id===taskPick?'selected':''}>${esc(t.title)}</option>`).join('')}</select>
+      <select id="cKind" aria-label="Kind" style="flex:0 0 auto;width:auto"><option value="Q" ${kind==='Q'?'selected':''}>a question</option><option value="FIX" ${kind==='FIX'?'selected':''}>a change</option><option value="INFO" ${kind==='INFO'?'selected':''}>just so you know</option></select>
+    </div>
+    <textarea id="cText" placeholder="${kind==='FIX'?'What should be different?':'Ask anything about this request.'}">${esc(draft)}</textarea>
+    <div class="r"><button class="btn sm primary" type="submit">Send</button>
+      ${queued?`<button class="btn sm ghost" type="button" id="startInbox" ${inboxSt.disabled?'disabled':''}>${esc(inboxSt.label||'Deliver my messages')}</button>`:''}
+      <span class="hint" style="margin-left:auto">The team checks every couple of minutes.</span></div>
+  </form>`;
+  const t=$('#thread'); t.scrollTop=t.scrollHeight;
+}
+
+/* ---------- actions ---------- */
+function openCompose(){ composeRaw=''; composePrio='P2'; composeErr=''; renderCompose(); $('#dlg').showModal(); setTimeout(()=>$('#rawText')?.focus(),30); }
+function renderCompose(){
+  $('#dlgInner').innerHTML=`
+  <div class="m-head"><h2>What do you want?</h2><p>Describe it the way you would to a colleague. Say what you want to happen, not how to build it. Mention anything specific you already know you need.</p></div>
+  <div class="m-body">
+    <div class="field"><textarea id="rawText" class="big" placeholder="People are spamming the request queue during shows. I want each person to only be able to request a few songs an hour, and if they go over they should see a clear message telling them when they can try again.">${esc(composeRaw)}</textarea></div>
+    <div class="field"><label for="prioSel">How urgent is it?</label><select id="prioSel">${Object.entries(PRIO).map(([k,v])=>`<option value="${k}" ${composePrio===k?'selected':''}>${v}</option>`).join('')}</select></div>
+    ${composeErr?`<p class="hint" style="color:var(--red)">${esc(composeErr)}</p>`:''}
+    <p class="hint">The lead engineer will read this back to you here before anything is built.</p>
+  </div>
+  <div class="m-foot"><button class="btn ghost" id="cancelC">Cancel</button><div class="spacer"></div><button class="btn primary" id="sendRaw">Send to the team</button></div>`;
+}
+async function fileRequest(){
+  composeRaw=$('#rawText').value.trim(); composePrio=$('#prioSel').value;
+  if(composeRaw.length<12){ composeErr='Say a little more so the team can understand what you want.'; renderCompose(); return; }
+  const {id,n}=nextId();
+  const doc={id,n,raw:composeRaw,title:composeRaw.split('\n')[0].slice(0,70),goal:'',why:'',must:[],mustNot:[],
+    assumptions:[],questions:[],hint:'',prio:composePrio,size:'medium',status:'new',
+    createdAt:nowIso(),updatedAt:nowIso(),approvals:{},plan:null,tasks:[],report:null,
+    log:[{at:nowIso(),who:'you',text:'you described what you wanted'}]};
+  try{ await api.putFeature(id,doc); $('#dlg').close(); go(pathFor(id)); await poll(); toast(`Saved as ${id}. The team will read it back to you shortly.`); }
+  catch(e){ composeErr='Could not save: '+e.message; renderCompose(); }
+}
+async function approveSpec(f){
+  const must=lines($('#eDone')?.value??'');
+  const goal=($('#eGoal')?.value??f.goal).trim();
+  if(!goal){ toast('The goal cannot be empty.'); return; }
+  const qs=(f.questions||[]).map((q,i)=>({q:q.q,a:(document.querySelector(`[data-qi="${i}"]`)?.value||'').trim()}));
+  const doc={...f,goal,must,mustNot:lines($('#eNot')?.value??''),
+    assumptions:$('#eAssume')?lines($('#eAssume').value):(f.assumptions||[]),
+    questions:qs,status:'ready',updatedAt:nowIso(),
+    approvals:{...(f.approvals||{}),spec:nowIso()},
+    log:[...(f.log||[]),{at:nowIso(),who:'you',text:'you approved the request and sent it to the team'}]};
+  try{ await api.putFeature(f.id,doc); await poll(); toast('Approved. The team will plan it shortly.'); }
+  catch(e){ toast('Could not save: '+esc(e.message)); }
+}
+async function approvePlan(f){
+  try{
+    await api.putFeature(f.id,{...f,status:'building',updatedAt:nowIso(),approvals:{...(f.approvals||{}),plan:nowIso()},
+      log:[...(f.log||[]),{at:nowIso(),who:'you',text:'you approved the plan; the team can start building'}]});
+    await api.addMessage({feature:f.id,task:null,to:'senior',from:'human',kind:'INFO',text:'Plan approved. Start building.',status:'queued',replyTo:null,createdAt:nowIso()});
+    await poll(); toast('Approved. The team will start building shortly.');
+  }catch(e){ toast('Could not approve: '+esc(e.message)); }
+}
+async function addContext(f,text){
+  if(!text.trim()) return;
+  try{
+    const entry={at:nowIso(),text:text.trim(),round:(f.plan&&f.plan.round)||1};
+    await api.putFeature(f.id,{...f,context:[...(f.context||[]),entry],status:'ready',updatedAt:nowIso(),
+      log:[...(f.log||[]),{at:nowIso(),who:'you',text:'you added more context and asked for a fresh plan'}]});
+    await poll(); toast('Sent. The team will write a fresh plan shortly.');
+  }catch(e){ toast('Could not send: '+esc(e.message)); }
+}
+async function answerQuestion(id,text){
+  const q=messages.find(m=>m.id===id); if(!q||!text.trim()) return;
+  try{
+    await api.addMessage({feature:q.feature,task:q.task||null,to:q.from,from:'human',kind:'A',text:text.trim(),status:'queued',replyTo:id,createdAt:nowIso()});
+    await api.patchMessage(id,{status:'answered'});
+    const f=features.find(x=>x.id===q.feature);
+    if(f&&f.status==='needs-input'&&openQ(f.id).length<=1){
+      await api.putFeature(f.id,{...f,status:f.approvals?.plan?'building':'ready',updatedAt:nowIso(),
+        log:[...(f.log||[]),{at:nowIso(),who:'you',text:'you answered the team'}]});
+    }
+    await poll(); toast('Answer sent. The team will pick it up shortly.');
+  }catch(e){ toast('Could not send: '+esc(e.message)); }
+}
+async function sendMessage(){
+  const f=feat(); if(!f||!draft.trim()) return;
+  try{
+    await api.addMessage({feature:f.id,task:taskPick||null,to:agentTab,from:'human',kind,text:draft.trim(),status:'queued',replyTo:null,createdAt:nowIso()});
+    draft=''; await poll(); render(); toast('Sent. The team will pick it up shortly.');
+  }catch(e){ toast('Could not send: '+esc(e.message)); }
+}
+async function del(f){
+  if(!confirm(`Delete “${f.title}” and everything said about it? This cannot be undone.`)) return;
+  try{ await api.delFeature(f.id); sel=null; drawerOpen=false; go('/'); await poll(); toast('Deleted.'); }
+  catch(e){ toast('Could not delete: '+esc(e.message)); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-open],[data-answer],[data-agent],[data-task],[data-run],[data-copy],button');
+  if(!t) return;
+  const f=feat();
+  if(t.dataset.copy!==undefined){ copy(t.dataset.copy); return; }
+  if(t.dataset.open){ drawerOpen=false; taskPick=''; $('#rail').classList.remove('open'); go(pathFor(t.dataset.open)); return; }
+  if(t.dataset.answer){ answerQuestion(t.dataset.answer,t.closest('.panel').querySelector('textarea').value); return; }
+  if(t.dataset.run){ liveStick=true; attachRun(t.dataset.run); render(); return; }
+  if(t.matches('.tab[data-doctab]')){ docTab=t.dataset.doctab; renderMain(); return; }
+  if(t.matches('.tab[data-hometab]')){ homeTab=t.dataset.hometab; renderMain(); return; }
+  if(t.matches('.tab[data-agent]')){ agentTab=t.dataset.agent; renderDrawer(); return; }
+  if(t.matches('.step[data-task]')&&f){ taskPick=t.dataset.task; if(AGENTS.includes(t.dataset.agent)) agentTab=t.dataset.agent; drawerOpen=true; renderDrawer(); $('#cText')?.focus(); return; }
+  switch(t.id){
+    case 'newBtn': case 'newBtn2': openCompose(); break;
+    case 'homeBtn': drawerOpen=false; $('#rail').classList.remove('open'); go('/'); break;
+    case 'railBtn': $('#rail').classList.toggle('open'); break;
+    case 'jumpAttn': { const w=features.filter(needsYou); if(w.length){ go(pathFor(w[0].id)); } break; }
+    case 'talkBtn': case 'talkBtn2': drawerOpen=true; if(t.id==='talkBtn2') agentTab='senior'; renderDrawer(); $('#cText')?.focus(); break;
+    case 'closeDrawer': drawerOpen=false; renderDrawer(); break;
+    case 'techBtn': tech=!tech; store('tech',tech?'1':'0'); renderMain(); renderDrawer(); break;
+    case 'themeBtn': { const cur=document.documentElement.getAttribute('data-theme');
+      const next=cur==='dark'?'light':cur==='light'?'':'dark';
+      if(next) document.documentElement.setAttribute('data-theme',next); else document.documentElement.removeAttribute('data-theme');
+      store('theme',next); break; }
+    case 'delBtn': if(f) del(f); break;
+    case 'startRead': if(f) startTeam('read',f.id); break;
+    case 'startPlan': if(f) startTeam('plan',f.id); break;
+    case 'startBuild': if(f) startTeam('build',f.id); break;
+    case 'startResume': if(f) startTeam('resume',f.id); break;
+    case 'startInbox': startTeam('inbox',null); break;
+    case 'stopRun': stopRun(); break;
+    case 'claudePingBtn': claudePing(); break;
+    case 'startInboxHome': startTeam('inbox',null); break;
+    case 'approveSpec': if(f) approveSpec(f); break;
+    case 'approvePlan': if(f) approvePlan(f); break;
+    case 'changePlan': { const b=$('#changeBox'); if(b){ b.hidden=!b.hidden; $('#changeText')?.focus(); } break; }
+    case 'sendChange': if(f) addContext(f,$('#changeText').value); break;
+    case 'sendRaw': fileRequest(); break;
+    case 'cancelC': $('#dlg').close(); break;
+  }
+});
+document.addEventListener('click',e=>{
+  if(e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey) return;
+  const a=e.target.closest('a[href^="/"]');
+  if(!a) return;
+  e.preventDefault();
+  go(a.getAttribute('href'));
+});
+$('#scrim').addEventListener('click',()=>{ drawerOpen=false; renderDrawer(); });
+document.addEventListener('scroll',e=>{
+  const el=e.target; if(!el||el.id!=='liveRows') return;
+  liveStick=el.scrollHeight-el.scrollTop-el.clientHeight<24;
+},true);
+document.addEventListener('input',e=>{ if(e.target.id==='cText') draft=e.target.value; });
+document.addEventListener('change',e=>{
+  if(e.target.id==='cTask'){ taskPick=e.target.value; renderDrawer(); }
+  if(e.target.id==='cKind'){ kind=e.target.value; renderDrawer(); }
+});
+document.addEventListener('submit',e=>{ if(e.target.id==='composer'){ e.preventDefault(); sendMessage(); } });
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){
+    if(e.target.id==='cText'){ e.preventDefault(); sendMessage(); }
+    if(e.target.id==='rawText'){ e.preventDefault(); fileRequest(); }
+  }
+});
+
+/* ---------- boot ---------- */
+{ const saved=store('theme'); if(saved) document.documentElement.setAttribute('data-theme',saved); }
+function migrateHash(){
+  const href=location.href, hi=href.indexOf('#'), h=hi>=0?href.slice(hi):'';
+  let np=null;
+  if(h==='#') np=location.pathname;
+  else if(h==='#/') np='/';
+  else if(h==='#/claude') np='/usage';
+  else { const m=/^#\/(F-\d+)$/.exec(h); if(m) np=pathFor(m[1]); }
+  if(np!==null) history.replaceState(null,'',np);
+}
+migrateHash();
+window.addEventListener('popstate',()=>{ route(); drawerOpen=false; render(); });
+window.addEventListener('hashchange',()=>{ migrateHash(); route(); drawerOpen=false; render(); });
+route();
+render();
+poll();
+setInterval(poll,2000);
+})();
+</script>
+</body>
+</html>

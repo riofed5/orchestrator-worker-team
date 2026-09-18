@@ -1,0 +1,16 @@
+# Secrets. Templates (*.example) are the only env files that may be committed.
+credentials/*.env
+**/.env
+**/.env.*
+!**/.env.example
+!credentials/services.env.example
+
+# Project never go online
+project
+# Board working data: run transcripts, account state, local paths.
+# The server recreates these folders on startup.
+board/data/
+
+# Personal working notes and screenshots: kept locally, never published.
+feature-request-*.md
+*.png
